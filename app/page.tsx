@@ -93,9 +93,6 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden items-center gap-8 md:flex">
-            <Link href="#builders" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
-              App Builders
-            </Link>
             <Link href="#features" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
               Features
             </Link>
@@ -112,16 +109,10 @@ export default function LandingPage() {
               <GitBranch className="h-5 w-5" />
             </Link>
             <ThemeToggle />
-            <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
-              Sign in
-            </Link>
-            <Link
-              href="/login"
-              className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105 dark:bg-white dark:text-black"
-            >
-              Start saving tokens
-            </Link>
-          </div>
+             <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
+               Sign in
+             </Link>
+           </div>
 
           <div className="flex items-center gap-3 md:hidden">
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
@@ -135,15 +126,11 @@ export default function LandingPage() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 top-[64px] z-40 bg-white dark:bg-black px-6 py-8 md:hidden">
           <div className="flex flex-col space-y-6">
-            <Link href="#builders" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">App Builders</Link>
             <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Features</Link>
             <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Pricing</Link>
             <Link href="/docs" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Docs</Link>
             <hr className="border-zinc-100 dark:border-white/10" />
             <Link href="/login" className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Sign in</Link>
-            <Link href="/login" className="flex w-full items-center justify-center rounded-xl bg-zinc-900 px-4 py-3 text-lg font-bold text-white dark:bg-white dark:text-black">
-              Start saving tokens
-            </Link>
           </div>
         </div>
       )}
