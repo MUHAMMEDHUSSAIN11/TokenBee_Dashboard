@@ -237,35 +237,63 @@ export default function LandingPage() {
             </div>
 
             {/* Right side: Code */}
-            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-2xl overflow-hidden ring-1 ring-white/5">
-              <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-4 py-3">
+            <div className="group relative rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-2xl overflow-hidden ring-1 ring-white/5 transition-all hover:ring-violet-500/20">
+              {/* Window Header */}
+              <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-5 py-4">
                 <div className="flex gap-2">
-                  <div className="h-3 w-3 rounded-full bg-red-500/80"></div>
-                  <div className="h-3 w-3 rounded-full bg-yellow-500/80"></div>
-                  <div className="h-3 w-3 rounded-full bg-green-500/80"></div>
+                  <div className="h-3 w-3 rounded-full bg-[#ff5f56] shadow-[0_0_8px_rgba(255,95,86,0.3)]"></div>
+                  <div className="h-3 w-3 rounded-full bg-[#ffbd2e] shadow-[0_0_8px_rgba(255,189,46,0.3)]"></div>
+                  <div className="h-3 w-3 rounded-full bg-[#27c93f] shadow-[0_0_8px_rgba(39,201,63,0.3)]"></div>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex items-center gap-1.5 rounded-full bg-black/40 p-1 border border-white/5">
                   <button 
                     onClick={() => setActiveTab("typescript")}
-                    className={`text-xs font-mono font-medium transition-colors ${activeTab === "typescript" ? "text-violet-400" : "text-zinc-500 hover:text-zinc-300"}`}
+                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${
+                      activeTab === "typescript" 
+                      ? "bg-violet-500 text-white shadow-lg shadow-violet-500/20" 
+                      : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                    }`}
                   >
                     TypeScript
                   </button>
                   <button 
                     onClick={() => setActiveTab("python")}
-                    className={`text-xs font-mono font-medium transition-colors ${activeTab === "python" ? "text-violet-400" : "text-zinc-500 hover:text-zinc-300"}`}
+                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${
+                      activeTab === "python" 
+                      ? "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20" 
+                      : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                    }`}
                   >
                     Python
                   </button>
                   <button 
                     onClick={() => setActiveTab("http")}
-                    className={`text-xs font-mono font-medium transition-colors ${activeTab === "http" ? "text-violet-400" : "text-zinc-500 hover:text-zinc-300"}`}
+                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${
+                      activeTab === "http" 
+                      ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" 
+                      : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                    }`}
                   >
-                    curl
+                    cURL
                   </button>
                 </div>
               </div>
-              <div className="p-6 font-mono text-[13px] sm:text-sm leading-relaxed overflow-x-auto">
+
+              {/* Window Content */}
+              <div className="p-7 font-mono text-[13px] sm:text-sm leading-relaxed overflow-x-auto min-h-[360px]">
+                <div className="mb-8 flex items-center justify-between gap-2 rounded-xl bg-white/[0.03] p-4 border border-white/5 group-hover:border-violet-500/20 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <Terminal className="h-4 w-4 text-violet-400" />
+                    <span className="text-zinc-500 select-none">$</span>
+                    <span className="text-zinc-200">
+                      {activeTab === "typescript" ? "npm install @tokenbee/sdk" : 
+                       activeTab === "python" ? "pip install tokenbee-sdk" : 
+                       "curl -X POST https://api.tokenbee.dev/v1/..."}
+                    </span>
+                  </div>
+                  <div className="h-2 w-2 rounded-full bg-violet-500 animate-pulse"></div>
+                </div>
+
                 {activeTab === "typescript" && (
                   <div className="text-zinc-300">
                     <span className="text-fuchsia-400">import</span> {'{ TokenBee, TokenBeeModel, CompressionRate }'} <span className="text-fuchsia-400">from</span> <span className="text-emerald-400">'@tokenbee/sdk'</span>;<br/><br/>
@@ -286,11 +314,11 @@ export default function LandingPage() {
                     <span className="text-fuchsia-400">from</span> tokenbee <span className="text-fuchsia-400">import</span> TokenBee, TokenBeeModel, CompressionRate<br/><br/>
                     tokenbee = TokenBee(api_key=<span className="text-emerald-400">'tb_secret_key'</span>)<br/><br/>
                     res = tokenbee.send(<br/>
-                    &nbsp;&nbsp;model=TokenBeeModel.ANTHROPIC_CLAUDE_3_5_SONNET,<br/>
+                    &nbsp;&nbsp;model=TokenBeeModel.OPENAI_GPT_4O,<br/>
                     &nbsp;&nbsp;input={'{'}<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'messages'</span>: [{'{'} <span className="text-emerald-400">'role'</span>: <span className="text-emerald-400">'user'</span>, <span className="text-emerald-400">'content'</span>: <span className="text-emerald-400">'Explain token compression like I’m 5'</span> {'}'}],<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'compression'</span>: <span className="text-emerald-400">'auto'</span>,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'rate'</span>: CompressionRate.HIGH<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'rate'</span>: CompressionRate.MEDIUM<br/>
                     &nbsp;&nbsp;{'}'}<br/>
                     )<br/><br/>
                     <span className="text-emerald-500">print</span>(res)
@@ -308,6 +336,7 @@ export default function LandingPage() {
                   </div>
                 )}
               </div>
+
             </div>
           </div>
         </section>
