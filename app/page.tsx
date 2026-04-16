@@ -363,6 +363,9 @@ export default function LandingPage() {
               <div className="relative z-10">
                 <Box className="mb-6 h-8 w-8 text-violet-600 dark:text-violet-400" />
                 <h3 className="mb-4 text-2xl font-bold">Query-Aware Compression</h3>
+                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+                  We use a proprietary semantic compression engine optimized for LLM calls. It detects and removes redundant semantic tokens without degrading output quality.
+                </p>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Unlike dumb token removal, TokenBee extracts your actual intent and compresses surrounding context dynamically. Save up to 50% without losing reasoning quality.
                 </p>
@@ -396,8 +399,15 @@ export default function LandingPage() {
         {/* SECTION 6 - Pricing */}
         <section id="pricing" className="relative z-10 mx-auto mt-32 max-w-[1200px] px-6">
           <div className="mb-16 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-widest mb-4">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+              </span>
+              Free while in Beta
+            </div>
             <h2 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Simple, transparent pricing</h2>
-            <p className="mt-4 text-xl text-zinc-500 dark:text-zinc-400">Choose the plan that's right for your traffic.</p>
+            <p className="mt-4 text-xl text-zinc-500 dark:text-zinc-400">Choose the plan that's right for your traffic. All paid features are currently unlocked for early adopters.</p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -483,7 +493,7 @@ export default function LandingPage() {
               </ul>
               
               <Link href="/login" className="mt-10 block w-full rounded-xl bg-zinc-900 dark:bg-white py-3 text-center text-sm font-bold text-white dark:text-black transition-transform hover:scale-[1.02]">
-                Upgrade now
+                Claim Free Beta Access
               </Link>
             </div>
 
@@ -532,7 +542,7 @@ export default function LandingPage() {
               </ul>
               
               <Link href="/login" className="mt-10 block w-full rounded-xl bg-purple-600 py-3 text-center text-sm font-bold text-white transition-transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
-                Get started
+                Claim Free Beta Access
               </Link>
             </div>
 
