@@ -34,9 +34,8 @@ function ScrollFade({
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-      } ${className}`}
+      className={`transition-all duration-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+        } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
@@ -50,7 +49,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-50 font-sans selection:bg-violet-500/30">
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .fade-up {
           opacity: 0;
           transform: translateY(20px);
@@ -105,14 +105,14 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link href="#" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
+            <Link href="#"  className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
               <GitBranch className="h-5 w-5" />
             </Link>
             <ThemeToggle />
-             <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
-               Sign in
-             </Link>
-           </div>
+            <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
+              Sign in
+            </Link>
+          </div>
 
           <div className="flex items-center gap-3 md:hidden">
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
@@ -137,7 +137,7 @@ export default function LandingPage() {
 
       <main className="relative pt-32 pb-20">
         <div className="glow-bg" />
-        
+
         {/* SECTION 2 - Hero */}
         <section className="relative z-10 mx-auto max-w-[1200px] px-6 text-center">
           <div className="fade-up delay-0 mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-white/10 bg-zinc-100/50 dark:bg-white/5 px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 backdrop-blur-md">
@@ -147,7 +147,7 @@ export default function LandingPage() {
             </span>
             Observability, Replays & Compression for App Builders
           </div>
-          
+
           <h1 className="fade-up delay-100 text-6xl font-extrabold tracking-tight sm:text-8xl lg:text-[5.5rem] leading-[1.1]">
             Observe, Replay and<br />
             <span className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 dark:from-violet-400 dark:via-fuchsia-400 dark:to-indigo-400 bg-clip-text text-transparent">
@@ -210,7 +210,7 @@ export default function LandingPage() {
                   <span>Control costs with query-aware token compression and caching</span>
                 </li>
               </ul>
-              
+
               <div className="pt-4 border-t border-zinc-200 dark:border-white/10">
                 <h4 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4 uppercase tracking-wider">Supported Providers</h4>
                 <div className="flex flex-wrap gap-3">
@@ -233,33 +233,30 @@ export default function LandingPage() {
                   <div className="h-3 w-3 rounded-full bg-[#27c93f] shadow-[0_0_8px_rgba(39,201,63,0.3)]"></div>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-full bg-black/40 p-1 border border-white/5">
-                  <button 
+                  <button
                     onClick={() => setActiveTab("typescript")}
-                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${
-                      activeTab === "typescript" 
-                      ? "bg-violet-500 text-white shadow-lg shadow-violet-500/20" 
-                      : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                    }`}
+                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${activeTab === "typescript"
+                        ? "bg-violet-500 text-white shadow-lg shadow-violet-500/20"
+                        : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                      }`}
                   >
                     TypeScript
                   </button>
-                  <button 
+                  <button
                     onClick={() => setActiveTab("python")}
-                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${
-                      activeTab === "python" 
-                      ? "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20" 
-                      : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                    }`}
+                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${activeTab === "python"
+                        ? "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20"
+                        : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                      }`}
                   >
                     Python
                   </button>
-                  <button 
+                  <button
                     onClick={() => setActiveTab("http")}
-                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${
-                      activeTab === "http" 
-                      ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" 
-                      : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                    }`}
+                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${activeTab === "http"
+                        ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
+                        : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                      }`}
                   >
                     cURL
                   </button>
@@ -273,9 +270,9 @@ export default function LandingPage() {
                     <Terminal className="h-4 w-4 text-violet-400" />
                     <span className="text-zinc-500 select-none">$</span>
                     <span className="text-zinc-200">
-                      {activeTab === "typescript" ? "npm install @tokenbee/sdk" : 
-                       activeTab === "python" ? "pip install tokenbee-sdk" : 
-                       "curl -X POST https://api.tokenbee.dev/v1/..."}
+                      {activeTab === "typescript" ? "npm install @tokenbee/sdk" :
+                        activeTab === "python" ? "pip install tokenbee-sdk" :
+                          "curl -X POST https://api.tokenbee.dev/v1/..."}
                     </span>
                   </div>
                   <div className="h-2 w-2 rounded-full bg-violet-500 animate-pulse"></div>
@@ -284,11 +281,15 @@ export default function LandingPage() {
                 {activeTab === "typescript" && (
                   <div className="text-zinc-300">
                     <span className="text-fuchsia-400">import</span> {'{ TokenBee, TokenBeeModel, CompressionRate }'} <span className="text-fuchsia-400">from</span> <span className="text-emerald-400">'@tokenbee/sdk'</span>;<br/><br/>
-                    <span className="text-fuchsia-400">const</span> tokenbee = <span className="text-fuchsia-400">new</span> TokenBee({'{'} apiKey: <span className="text-emerald-400">'tb_secret_key'</span> {'}'});<br/><br/>
-                    <span className="text-fuchsia-400">const</span> res = <span className="text-fuchsia-400">await</span> tokenbee.send({'{'}<br/>
+                    <span className="text-zinc-500">{'// Initialize with your TokenBee key + provider key (BYOK)'}</span><br/>
+                    <span className="text-fuchsia-400">const</span> bee = <span className="text-fuchsia-400">new</span> TokenBee({'{'}<br/>
+                    &nbsp;&nbsp;apiKey: <span className="text-emerald-400">'tb_live_...'</span>,<br/>
+                    &nbsp;&nbsp;llmKey: <span className="text-orange-400">'sk-your-provider-key'</span><br/>
+                    {'}'});<br/><br/>
+                    <span className="text-fuchsia-400">const</span> res = <span className="text-fuchsia-400">await</span> bee.send({'{'}<br/>
                     &nbsp;&nbsp;model: TokenBeeModel.OpenAIGPT4o,<br/>
                     &nbsp;&nbsp;input: {'{'}<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;messages: [{'{'} role: <span className="text-emerald-400">'user'</span>, content: <span className="text-emerald-400">'Explain token compression like I’m 5'</span> {'}'}],<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;messages: [{'{'} role: <span className="text-emerald-400">'user'</span>, content: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;compression: <span className="text-emerald-400">'auto'</span>,<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;rate: CompressionRate.High,<br/>
                     &nbsp;&nbsp;{'}'}<br/>
@@ -299,11 +300,15 @@ export default function LandingPage() {
                 {activeTab === "python" && (
                   <div className="text-zinc-300">
                     <span className="text-fuchsia-400">from</span> tokenbee <span className="text-fuchsia-400">import</span> TokenBee, TokenBeeModel, CompressionRate<br/><br/>
-                    tokenbee = TokenBee(api_key=<span className="text-emerald-400">'tb_secret_key'</span>)<br/><br/>
-                    res = tokenbee.send(<br/>
+                    <span className="text-zinc-500">{'# Initialize with your keys (BYOK)'}</span><br/>
+                    bee = TokenBee(<br/>
+                    &nbsp;&nbsp;api_key=<span className="text-emerald-400">'tb_live_...'</span>,<br/>
+                    &nbsp;&nbsp;llm_key=<span className="text-orange-400">'sk-your-provider-key'</span><br/>
+                    )<br/><br/>
+                    res = bee.send(<br/>
                     &nbsp;&nbsp;model=TokenBeeModel.OPENAI_GPT_4O,<br/>
                     &nbsp;&nbsp;input={'{'}<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'messages'</span>: [{'{'} <span className="text-emerald-400">'role'</span>: <span className="text-emerald-400">'user'</span>, <span className="text-emerald-400">'content'</span>: <span className="text-emerald-400">'Explain token compression like I’m 5'</span> {'}'}],<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'messages'</span>: [{'{'} <span className="text-emerald-400">'role'</span>: <span className="text-emerald-400">'user'</span>, <span className="text-emerald-400">'content'</span>: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'compression'</span>: <span className="text-emerald-400">'auto'</span>,<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'rate'</span>: CompressionRate.MEDIUM<br/>
                     &nbsp;&nbsp;{'}'}<br/>
@@ -313,12 +318,13 @@ export default function LandingPage() {
                 )}
                 {activeTab === "http" && (
                   <div className="text-zinc-300">
-                    curl -X POST https://api.tokenbee.dev/v1/chat/completions \<br/>
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"Authorization: Bearer tb_secret_key"</span> \<br/>
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Provider: mistral"</span> \<br/>
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Model: mistral-large-latest"</span> \<br/>
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Compression: auto"</span> \<br/>
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Rate: 0.33"</span> \<br/>
+                    curl -X POST https://api.tokenbee.dev/v1/chat/completions \<br />
+                    &nbsp;&nbsp;-H <span className="text-emerald-400">"Authorization: Bearer tb_live_..."</span> \<br />
+                    &nbsp;&nbsp;-H <span className="text-orange-400">"X-LLM-Key: sk-your-provider-key"</span> \<br />
+                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Provider: mistral"</span> \<br />
+                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Model: mistral-large-latest"</span> \<br />
+                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Compression: auto"</span> \<br />
+                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Rate: 0.33"</span> \<br />
                     &nbsp;&nbsp;-d <span className="text-emerald-400">{`'{"messages": [{"role":"user", "content":"Explain..."}]}'`}</span>
                   </div>
                 )}
@@ -340,12 +346,12 @@ export default function LandingPage() {
               <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">Gateway Latency</span>
             </div>
             <div className="flex flex-col items-center justify-center text-center">
-              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">0</span>
-              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">Line Changes</span>
+              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">Unified</span>
+              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">SDK Experience</span>
             </div>
             <div className="flex flex-col items-center justify-center text-center">
-              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">25+</span>
-              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">Cloud LLMs Supported</span>
+              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">BYOK</span>
+              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">Your Keys, Your Control</span>
             </div>
           </div>
         </section>
@@ -371,7 +377,7 @@ export default function LandingPage() {
                 </p>
               </div>
             </ScrollFade>
-            
+
             <ScrollFade delay={100} className="group relative rounded-3xl bg-zinc-50 dark:bg-zinc-900 p-8 border border-zinc-200 dark:border-white/10 hover:border-emerald-500/50 transition-colors shadow-sm">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-3xl opacity-0 transition-opacity group-hover:opacity-100"></div>
               <div className="relative z-10">
@@ -386,14 +392,38 @@ export default function LandingPage() {
             <ScrollFade delay={200} className="group relative rounded-3xl bg-zinc-50 dark:bg-zinc-900 p-8 border border-zinc-200 dark:border-white/10 hover:border-blue-500/50 transition-colors shadow-sm">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-3xl opacity-0 transition-opacity group-hover:opacity-100"></div>
               <div className="relative z-10">
-                <Activity className="mb-6 h-8 w-8 text-blue-600 dark:text-blue-400" />
-                <h3 className="mb-4 text-2xl font-bold">Total Observability</h3>
+                <Lock className="mb-6 h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <h3 className="mb-4 text-2xl font-bold">BYOK Architecture</h3>
+                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+                  Bring Your Own Key. Your provider API keys pass through the SDK and are forwarded directly to the LLM. TokenBee never stores them.
+                </p>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Monitor latency, token usage, and real USD costs per model, per app, or per user. Filter traces and instantly debug production failures in our dashboard.
+                  Maintain full control over your provider billing, rate limits, and security posture.
                 </p>
               </div>
             </ScrollFade>
           </div>
+
+          <ScrollFade delay={300} className="mt-12">
+            <div className="p-8 rounded-3xl border border-violet-500/30 bg-violet-500/5 backdrop-blur-sm">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-violet-500 text-white shadow-lg shadow-violet-500/25">
+                  <Zap className="h-8 w-8 fill-white" />
+                </div>
+                <div className="text-center md:text-left">
+                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">Upcoming: Semantic Agent Compression</h3>
+                  <p className="mt-2 text-zinc-600 dark:text-zinc-400 text-lg">
+                    We are building a specialized compression mode for autonomous coding agents. Minimize context bloat in deep RAG loops without losing reasoning precision.
+                  </p>
+                </div>
+                <div className="md:ml-auto shrink-0">
+                  <span className="px-4 py-2 rounded-full border border-violet-500/50 text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest whitespace-nowrap">
+                    Coming Soon
+                  </span>
+                </div>
+              </div>
+            </div>
+          </ScrollFade>
         </section>
 
         {/* SECTION 6 - Pricing */}
@@ -422,9 +452,9 @@ export default function LandingPage() {
                 <span className="text-zinc-500 text-xs font-medium uppercase tracking-wide">/ mo</span>
               </div>
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">Start optimizing your LLM costs</p>
-              
+
               <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">1M <span className="text-xs font-medium text-zinc-500">tokens/mo</span></div>
-              
+
               <ul className="mt-8 space-y-3 flex-1">
                 <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
                   <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-emerald-500/10 flex items-center justify-center">
@@ -445,7 +475,7 @@ export default function LandingPage() {
                   Basic observability
                 </li>
               </ul>
-              
+
               <Link href="/login" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
                 Current Plan
               </Link>
@@ -462,9 +492,9 @@ export default function LandingPage() {
                 <span className="text-zinc-500 text-xs font-medium uppercase tracking-wide">/ mo</span>
               </div>
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">For indie developers</p>
-              
+
               <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">20M <span className="text-xs font-medium text-zinc-500">tokens/mo</span></div>
-              
+
               <ul className="mt-8 space-y-3 flex-1">
                 <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
                   <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center">
@@ -479,7 +509,7 @@ export default function LandingPage() {
                   Multi-provider support
                 </li>
                 <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                   <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center">
+                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center">
                     <Check className="h-2.5 w-2.5 text-blue-600 dark:text-blue-400" />
                   </div>
                   30-day log retention
@@ -491,7 +521,7 @@ export default function LandingPage() {
                   Cost & token savings insights
                 </li>
               </ul>
-              
+
               <Link href="/login" className="mt-10 block w-full rounded-xl bg-zinc-900 dark:bg-white py-3 text-center text-sm font-bold text-white dark:text-black transition-transform hover:scale-[1.02]">
                 Claim Free Beta Access
               </Link>
@@ -511,9 +541,9 @@ export default function LandingPage() {
                 <span className="text-zinc-500 text-xs font-medium uppercase tracking-wide">/ mo</span>
               </div>
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">For growing apps</p>
-              
+
               <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">100M <span className="text-xs font-medium text-zinc-500">tokens/mo</span></div>
-              
+
               <ul className="mt-8 space-y-3 flex-1">
                 <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
                   <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-purple-500/10 flex items-center justify-center">
@@ -540,7 +570,7 @@ export default function LandingPage() {
                   Detailed savings analytics
                 </li>
               </ul>
-              
+
               <Link href="/login" className="mt-10 block w-full rounded-xl bg-purple-600 py-3 text-center text-sm font-bold text-white transition-transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
                 Claim Free Beta Access
               </Link>
@@ -556,9 +586,9 @@ export default function LandingPage() {
                 <span className="text-4xl font-extrabold text-zinc-900 dark:text-white">Custom</span>
               </div>
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">Pay as you grow</p>
-              
+
               <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">$0.20 <span className="text-xs font-medium text-zinc-500">/ 1M tokens</span></div>
-              
+
               <ul className="mt-8 space-y-3 flex-1">
                 <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
                   <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-red-500/10 flex items-center justify-center">
@@ -579,7 +609,7 @@ export default function LandingPage() {
                   Dedicated support
                 </li>
               </ul>
-              
+
               <Link href="mailto:sales@tokenbee.dev" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
                 Contact sales
               </Link>
@@ -627,8 +657,8 @@ export default function LandingPage() {
           <div>
             <h4 className="mb-4 font-bold text-white uppercase tracking-wider text-xs">Legal</h4>
             <ul className="space-y-3">
-              <li><Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="#" className="hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li><Link href="mailto:hello@tokenbee.dev" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
