@@ -7,20 +7,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: 'TokenBee — LLM Observability & Compression',
-  description: 'Complete observability, automatic prompt compression, and agent replay for LLM applications. One URL change. No SDK required. Free for 1,000 requests.',
+  title: 'TokenBee — Intelligent LLM Gateway & Semantic Compression',
+  description: 'Secure LLM observability, prompt compression, and frame-by-frame agent replays. Stateless BYOK architecture for production AI applications.',
   keywords: [
-    'LLM observability',
+    'LLM gateway',
+    'BYOK architecture',
     'prompt compression',
-    'AI monitoring',
+    'semantic token reduction',
     'agent replay',
-    'LLM cost tracking',
-    'OpenAI monitoring',
-    'Anthropic monitoring'
+    'LLM observability'
   ],
   openGraph: {
-    title: 'TokenBee — LLM Observability & Compression',
-    description: 'See everything. Cut costs. Debug agents.',
+    title: 'TokenBee — Observe, Replay and Compress LLM traffic.',
+    description: 'Stateless BYOK gateway for high-fidelity LLM observability and semantic compression.',
     type: 'website',
   }
 };
