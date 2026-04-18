@@ -340,7 +340,7 @@ export default function DocsPage() {
                 ))}
               </div>
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Interested in early access? Contact us at <a href="mailto:hello@tokenbee.dev" className="text-violet-500 hover:text-violet-400 underline">hello@tokenbee.dev</a>
+                Interested in early access? Contact us at <a href="mailto:founders@tokenbee.io" className="text-violet-500 hover:text-violet-400 underline">founders@tokenbee.io</a>
               </p>
             </div>
           </section>
@@ -503,7 +503,7 @@ export default function DocsPage() {
 
           {/* Footer */}
           <footer className="mt-32 pt-12 border-t border-zinc-200 dark:border-zinc-800 text-center text-sm text-zinc-500">
-            <p>© {new Date().getFullYear()} TokenBee Inc. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} TokenBee Inc. All rights reserved. <a href="mailto:founders@tokenbee.io" className="hover:text-zinc-300">Contact</a></p>
           </footer>
         </div>
       </main>
