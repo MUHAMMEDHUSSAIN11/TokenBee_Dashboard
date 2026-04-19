@@ -5,6 +5,7 @@ import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+import SessionTimeout from "@/components/auth/SessionTimeout";
 
 export const metadata: Metadata = {
   title: 'TokenBee — Intelligent LLM Gateway & Semantic Compression',
@@ -38,7 +39,10 @@ export default function RootLayout({
       <body className="min-h-full font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <QueryProvider>
-            <TooltipProvider delay={200}>{children}</TooltipProvider>
+            <TooltipProvider delay={200}>
+              <SessionTimeout />
+              {children}
+            </TooltipProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>

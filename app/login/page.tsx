@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -16,8 +17,46 @@ export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
 
+  const handleOAuth = async (provider: "google" | "github") => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      setError(err.message || `An error occurred during ${provider} sign in.`);
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/settings`,
+      });
+      if (error) throw error;
+      setSuccess("Check your email for a password reset link.");
+    } catch (err: any) {
+      setError(err.message || "An error occurred during password reset.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isForgotPassword) return handleForgotPassword(e);
+
     setIsLoading(true);
     setError(null);
     setSuccess(null);
@@ -62,8 +101,41 @@ export default function LoginPage() {
 
       <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-zinc-50 p-8 shadow-xl shadow-zinc-200/50 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/50">
         <h2 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
-          {isSignUp ? "Create an account" : "Welcome back"}
+          {isForgotPassword
+            ? "Reset password"
+            : isSignUp
+            ? "Create an account"
+            : "Welcome back"}
         </h2>
+
+        {!isForgotPassword && (
+          <div className="mb-6 flex flex-col gap-3">
+            <button
+              onClick={() => handleOAuth("google")}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 disabled:opacity-50"
+            >
+              Continue with Google
+            </button>
+            <button
+              onClick={() => handleOAuth("github")}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 disabled:opacity-50"
+            >
+              Continue with GitHub
+            </button>
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-zinc-200 dark:border-zinc-700"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-zinc-50 px-2 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
@@ -85,24 +157,41 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label
-              className="text-sm font-medium text-zinc-600 dark:text-zinc-400"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete={isSignUp ? "new-password" : "current-password"}
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-zinc-900 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
-              placeholder="••••••••"
-            />
-          </div>
+          {!isForgotPassword && (
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label
+                  className="text-sm font-medium text-zinc-600 dark:text-zinc-400"
+                  htmlFor="password"
+                >
+                  Password
+                </label>
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsForgotPassword(true);
+                      setError(null);
+                      setSuccess(null);
+                    }}
+                    className="text-xs font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <input
+                id="password"
+                type="password"
+                autoComplete={isSignUp ? "new-password" : "current-password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-zinc-900 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                placeholder="••••••••"
+              />
+            </div>
+          )}
 
           {error && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-400">
@@ -125,7 +214,11 @@ export default function LoginPage() {
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                {isSignUp ? "Sign up" : "Sign in"}
+                {isForgotPassword
+                  ? "Send reset link"
+                  : isSignUp
+                  ? "Sign up"
+                  : "Sign in"}
                 <ArrowRight className="h-4 w-4" />
               </>
             )}
@@ -133,16 +226,29 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-500">
-          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-          <button
-            type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300 focus:outline-none"
-          >
-            {isSignUp ? "Sign in" : "Sign up"}
-          </button>
+          {isForgotPassword ? (
+            <button
+              type="button"
+              onClick={() => setIsForgotPassword(false)}
+              className="font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400"
+            >
+              Back to sign in
+            </button>
+          ) : (
+            <>
+              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300 focus:outline-none"
+              >
+                {isSignUp ? "Sign in" : "Sign up"}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
