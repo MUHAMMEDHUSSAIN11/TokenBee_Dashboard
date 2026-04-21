@@ -8,7 +8,9 @@ import {
   Play,
   Settings,
   Telescope,
+  LogOut,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 import { useEffect, useState } from "react";
@@ -23,6 +25,7 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const supabase = createClient();
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -35,6 +38,12 @@ export default function Sidebar() {
     };
     fetchUser();
   }, [supabase.auth]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-zinc-200 bg-white transition-colors dark:border-zinc-800 dark:bg-zinc-950">
@@ -87,13 +96,22 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="border-t border-zinc-200 px-5 py-4 dark:border-zinc-800">
         {userEmail ? (
-          <div className="flex items-center justify-between gap-2 overflow-hidden">
-            <div className="flex flex-col overflow-hidden">
-               <span className="truncate text-sm font-medium text-zinc-700 dark:text-zinc-200">
-                 {userEmail}
-               </span>
-               <span className="text-xs text-zinc-500">Free Tier</span>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-2 overflow-hidden px-1">
+              <div className="flex flex-col overflow-hidden">
+                <span className="truncate text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                  {userEmail}
+                </span>
+                <span className="text-xs text-zinc-500">Free Tier</span>
+              </div>
             </div>
+            <button
+              onClick={handleSignOut}
+              className="flex w-full items-center gap-2 rounded-lg py-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </button>
           </div>
         ) : (
           <span className="text-xs text-zinc-500">v0.1.0</span>
