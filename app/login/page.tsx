@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Telescope, Loader2, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -38,6 +38,7 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -60,6 +61,13 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Check if we're in the middle of an OAuth flow (detecting the code in URL)
+    if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
+      setIsVerifying(true);
+    }
+  }, []);
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,6 +125,22 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-6 transition-colors dark:bg-zinc-950">
+      { (isLoading || isVerifying) && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm transition-all dark:bg-zinc-950/80">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600 shadow-lg shadow-violet-600/20">
+              <Telescope className="h-6 w-6 animate-pulse text-white" />
+            </div>
+            <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm font-medium">
+                {isVerifying ? "Verifying session..." : "Authenticating..."}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mb-8 flex flex-col items-center gap-4 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600 shadow-lg shadow-violet-600/20">
           <Telescope className="h-6 w-6 text-white" />
