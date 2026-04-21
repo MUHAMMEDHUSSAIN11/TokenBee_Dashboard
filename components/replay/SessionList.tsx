@@ -126,7 +126,7 @@ export default function SessionList() {
                   &quot;X-TS-Session-Id: my-agent-run-001&quot;
                 </span>
                 {" \\\n  "}
-                <span className="text-zinc-500">http://localhost:5137/v1/chat/completions</span>
+                <span className="text-zinc-500">{process.env.NEXT_PUBLIC_API_URL || "https://api.tokenbee.io"}/v1/chat/completions</span>
               </pre>
             </>
           )}

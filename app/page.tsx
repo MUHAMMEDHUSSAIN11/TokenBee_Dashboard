@@ -324,7 +324,7 @@ export default function LandingPage() {
                 )}
                 {activeTab === "http" && (
                   <div className="text-zinc-300">
-                    curl -X POST https://api.tokenbee.dev/v1/chat/completions \<br />
+                    curl -X POST https://api.tokenbee.io/v1/chat/completions \<br />
                     &nbsp;&nbsp;-H <span className="text-emerald-400">"Authorization: Bearer tb_live_..."</span> \<br />
                     &nbsp;&nbsp;-H <span className="text-orange-400">"X-LLM-Key: sk-your-provider-key"</span> \<br />
                     &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Provider: mistral"</span> \<br />

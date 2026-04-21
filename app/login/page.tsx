@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Telescope, Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const GoogleIcon = () => (
@@ -129,7 +129,7 @@ export default function LoginPage() {
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm transition-all dark:bg-zinc-950/80">
           <div className="flex flex-col items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600 shadow-lg shadow-violet-600/20">
-              <Telescope className="h-6 w-6 animate-pulse text-white" />
+              <img src="/logo-dark.svg" alt="TokenBee" className="h-6 w-6 brightness-0 invert" />
             </div>
             <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -143,7 +143,7 @@ export default function LoginPage() {
 
       <div className="mb-8 flex flex-col items-center gap-4 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600 shadow-lg shadow-violet-600/20">
-          <Telescope className="h-6 w-6 text-white" />
+          <img src="/logo-dark.svg" alt="TokenBee" className="h-6 w-6 brightness-0 invert" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
           TokenBee
