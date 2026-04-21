@@ -49,9 +49,9 @@ export default function DailyChart({ days }: DailyChartProps) {
 
   if (isLoading) {
     return (
-      <Card className="border-zinc-800 bg-zinc-900/80">
+      <Card className="border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/80">
         <CardHeader>
-          <CardTitle className="text-zinc-200">Daily Activity</CardTitle>
+          <CardTitle className="text-zinc-900 dark:text-zinc-200">Daily Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-[300px] w-full rounded-lg bg-zinc-100 dark:bg-zinc-800" />
@@ -62,13 +62,13 @@ export default function DailyChart({ days }: DailyChartProps) {
 
   if (isError || !data) {
     return (
-      <Card className="border-zinc-800 bg-zinc-900/80">
+      <Card className="border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/80">
         <CardContent className="flex items-center gap-3 py-8">
-          <AlertTriangle className="h-5 w-5 text-red-400" />
-          <p className="text-sm text-red-300">Failed to load chart data.</p>
+          <AlertTriangle className="h-5 w-5 text-red-500" />
+          <p className="text-sm text-red-600 dark:text-red-300">Failed to load chart data.</p>
           <button
             onClick={() => refetch()}
-            className="ml-auto text-sm font-medium text-red-400 underline hover:text-red-300"
+            className="ml-auto text-sm font-medium text-red-600 underline hover:text-red-500"
           >
             Retry
           </button>
@@ -79,9 +79,9 @@ export default function DailyChart({ days }: DailyChartProps) {
 
   if (data.length === 0) {
     return (
-      <Card className="border-zinc-800 bg-zinc-900/80">
+      <Card className="border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/80">
         <CardHeader>
-          <CardTitle className="text-zinc-200">Daily Activity</CardTitle>
+          <CardTitle className="text-zinc-900 dark:text-zinc-200">Daily Activity</CardTitle>
         </CardHeader>
         <CardContent className="flex h-[300px] items-center justify-center">
           <p className="text-sm text-zinc-500">

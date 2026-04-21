@@ -22,7 +22,10 @@ export const metadata: Metadata = {
     title: 'TokenBee — Observe, Replay and Compress LLM traffic.',
     description: 'Stateless BYOK gateway for high-fidelity LLM observability and semantic compression.',
     type: 'website',
-  }
+  },
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

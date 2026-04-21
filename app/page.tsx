@@ -83,12 +83,18 @@ export default function LandingPage() {
       {/* SECTION 1 - Navigation */}
       <nav className="fixed top-0 z-50 w-full border-b border-zinc-200 dark:border-white/[0.05] bg-white/80 dark:bg-black/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/20">
-              <Zap className="h-4 w-4 text-white fill-white" />
-            </div>
-            <Link href="/" className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              TokenBee
+          <div className="flex items-center">
+            <Link href="/" className="relative flex items-center">
+              <img 
+                src="/logo-dark.svg" 
+                alt="TokenBee" 
+                className="h-8.5 w-auto opacity-0 dark:opacity-100" 
+              />
+              <img 
+                src="/logo-light.svg" 
+                alt="TokenBee" 
+                className="absolute left-0 top-0 h-8.5 w-auto opacity-100 dark:opacity-0" 
+              />
             </Link>
           </div>
 
@@ -637,9 +643,17 @@ export default function LandingPage() {
       <footer className="border-t border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#050505] py-12 text-sm text-zinc-500">
         <div className="mx-auto grid max-w-[1200px] gap-8 px-6 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <Zap className="h-5 w-5 text-violet-600 dark:text-violet-500 fill-violet-600 dark:fill-violet-500" />
-              <span className="text-lg font-bold text-zinc-900 dark:text-white">TokenBee</span>
+            <div className="relative flex items-center mb-4">
+              <img 
+                src="/logo-dark.svg" 
+                alt="TokenBee" 
+                className="h-7 w-auto opacity-0 dark:opacity-100" 
+              />
+              <img 
+                src="/logo-light.svg" 
+                alt="TokenBee" 
+                className="absolute left-0 top-0 h-7 w-auto opacity-100 dark:opacity-0" 
+              />
             </div>
             <p className="max-w-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
               The intelligence layer for your LLM traffic. Compression, replays, and routing in one gateway.
