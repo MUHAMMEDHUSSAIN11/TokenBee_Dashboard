@@ -113,12 +113,13 @@ export default function LoginPage() {
           password,
         });
         if (error) throw error;
+        setIsVerifying(true); // Maintain loading overlay
         router.push("/dashboard");
         router.refresh();
+        // Do NOT call setIsLoading(false) here, we want it to stay loading until unmount
       }
     } catch (err: any) {
       setError(err.message || "An error occurred during authentication.");
-    } finally {
       setIsLoading(false);
     }
   };

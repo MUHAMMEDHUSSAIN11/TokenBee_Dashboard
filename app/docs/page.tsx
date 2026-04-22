@@ -228,12 +228,13 @@ export default function DocsPage() {
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                { provider: "OpenAI", models: ["GPT-4o", "GPT-4o Mini", "O1", "O1 Mini", "O3 Mini"], color: "emerald" },
-                { provider: "Anthropic", models: ["Claude 4.6 Sonnet", "Claude 4.6 Opus", "Claude 3.5 Sonnet", "Claude 3.5 Haiku", "Claude 3 Opus"], color: "orange" },
-                { provider: "Google", models: ["Gemini 3.1 Pro", "Gemini 3.1 Flash", "Gemini 2.0 Flash", "Gemini 2.0 Pro", "Gemini 1.5 Pro"], color: "blue" },
-                { provider: "Mistral", models: ["Large", "Small", "Pixtral Large", "Nemo"], color: "red" },
-                { provider: "Perplexity", models: ["Sonar", "Sonar Pro", "Sonar Reasoning"], color: "cyan" },
-                { provider: "Groq", models: ["Llama 3.3 70B", "Llama 3.1 8B", "Mixtral 8x7B", "Gemma2 9B"], color: "pink" },
+                { provider: "OpenAI", models: ["GPT-4.5", "GPT-4o", "GPT-4o Mini", "o1", "o1-mini", "o3-mini"], color: "emerald" },
+                { provider: "Anthropic", models: ["Claude 3.7 Sonnet", "Claude 3.5 Sonnet", "Claude 3.5 Haiku", "Claude 3 Opus"], color: "orange" },
+                { provider: "Google", models: ["Gemini 3.1 Pro", "Gemini 3.1 Flash", "Gemini 2.5 Pro", "Gemini 2.0 Flash"], color: "blue" },
+                { provider: "Mistral", models: ["Mistral Large", "Mistral Small", "Pixtral Large", "Mistral Nemo"], color: "red" },
+                { provider: "Perplexity", models: ["Sonar Pro", "Sonar Reasoning", "Sonar"], color: "cyan" },
+                { provider: "Groq", models: ["Llama 3.3 70B", "Llama 3.1 8B", "DeepSeek R1 Distill 70B"], color: "pink" },
+                { provider: "xAI", models: ["Grok-3", "Grok-2", "Grok-2 Mini"], color: "zinc" },
               ].map((group) => (
                 <div key={group.provider} className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
                   <h4 className="font-bold text-sm text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
@@ -455,29 +456,32 @@ export default function DocsPage() {
 
           <hr className="my-16 border-zinc-200 dark:border-zinc-800" />
 
-          {/* ── DATA PRIVACY ──────────────────────────────────────── */}
           <section id="privacy" className="mb-20 scroll-mt-24">
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
                 <ShieldCheck className="h-5 w-5" />
               </div>
-              <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Data Privacy</h2>
+              <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Absolute Control & Opt-Outs</h2>
             </div>
             <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
-              TokenBee records request/response payloads by default to enable session replays and trace debugging. 
-              For PII-sensitive data, you can opt out at the request level.
+              TokenBee enables powerful features like Payload Logging, Session Replays, and Compression by default — but you maintain absolute control over your traffic. 
+              <strong>You can disable these features entirely</strong> for specific endpoints, agents, or environments directly through the SDK.
             </p>
 
             <div className="space-y-6">
               <div className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">
                 <div className="p-6 bg-[#0d0d0d]">
-                  <pre className="font-mono text-sm text-zinc-300 overflow-x-auto leading-relaxed">
-                    <span className="text-zinc-500">{"// Disable payload logging for this request"}</span>{"\n"}
+                  <pre className="font-mono text-[13px] sm:text-sm text-zinc-300 overflow-x-auto leading-relaxed">
+                    <span className="text-zinc-500">{"// Disable features per-request"}</span>{"\n"}
                     <code className="text-violet-400">const</code> res = <code className="text-violet-400">await</code> client.send({"{"}{"\n"}
                     {"  "}model: TokenBeeModel.OpenAIGPT4o,{"\n"}
                     {"  "}input: {"{"}{"\n"}
                     {"    "}messages: [...],{"\n"}
-                    {"    "}<span className="text-red-400">privacy</span>: <span className="text-emerald-400">true</span>{"\n"}
+                    {"    "}<span className="text-zinc-500">{"// 1. Disable payload logging & replays completely"}</span>{"\n"}
+                    {"    "}<span className="text-red-400">privacy</span>: <span className="text-emerald-400">true</span>,{"\n"}
+                    {"    "}<span className="text-zinc-500">{"// 2. Disable semantic compression (bypass completely)"}</span>{"\n"}
+                    {"    "}<span className="text-red-400">compression</span>: <span className="text-emerald-400">'off'</span>,{"\n"}
+                    {"    "}<span className="text-zinc-500">{"// 3. Omitting 'sessionId' disables session grouping"}</span>{"\n"}
                     {"  "}{"}"}{"\n"}
                     {"}"});
                   </pre>
@@ -488,12 +492,12 @@ export default function DocsPage() {
                 <div className="flex gap-4">
                   <ShieldCheck className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-red-600 dark:text-red-400 mb-1">What happens with privacy: true?</h4>
+                    <h4 className="font-bold text-red-600 dark:text-red-400 mb-1">What happens when features are disabled?</h4>
                     <ul className="text-sm text-zinc-700 dark:text-zinc-300 space-y-2 leading-relaxed">
-                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> RequestBody and ResponseBody are dropped — never stored</li>
-                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> Session replay payloads are not recorded</li>
-                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> Token counts, latency, cost, and model metadata are still tracked</li>
-                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> Compression still works normally</li>
+                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> Request and Response payloads are never recorded</li>
+                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> Semantic Compression Engine is bypassed directly to the provider</li>
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> Basic Observability (Model, Latency, API failures) still works</li>
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> Backend syncs latest provider pricing to calculate USD costs accurately automatically</li>
                     </ul>
                   </div>
                 </div>

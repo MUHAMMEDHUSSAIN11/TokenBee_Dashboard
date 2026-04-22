@@ -116,17 +116,17 @@ export default function SessionList() {
           {!isSearching && (
             <>
               <p className="mt-1.5 max-w-sm text-center text-sm text-zinc-500">
-                Add the <code className="text-violet-400">X-TS-Session-Id</code>{" "}
-                header to your requests to start recording agent sessions.
+                Pass a <code className="text-violet-400">sessionId</code> in your SDK request to start recording agent sessions.
               </p>
-              <pre className="mt-4 rounded-lg border border-zinc-800 bg-zinc-950 p-3 text-xs text-zinc-400">
-                <span className="text-zinc-500">curl</span>{" "}
-                <span className="text-violet-300">-H</span>{" "}
-                <span className="text-emerald-300">
-                  &quot;X-TS-Session-Id: my-agent-run-001&quot;
-                </span>
-                {" \\\n  "}
-                <span className="text-zinc-500">{process.env.NEXT_PUBLIC_API_URL || "https://api.tokenbee.io"}/v1/chat/completions</span>
+              <pre className="mt-4 rounded-lg border border-zinc-800 bg-[#0d0d0d] p-4 text-xs text-zinc-300 overflow-x-auto text-left w-full max-w-md">
+                <span className="text-zinc-500">{"// TokenBee SDK"}</span><br/>
+                <span className="text-fuchsia-400">await</span> client.send({`{`}<br/>
+                &nbsp;&nbsp;model: TokenBeeModel.OpenAIGPT4o,<br/>
+                &nbsp;&nbsp;input: {`{`}<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;messages: [...],<br/>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-orange-400">sessionId</span>: <span className="text-emerald-400">'my-agent-run-001'</span><br/>
+                &nbsp;&nbsp;{`}`}<br/>
+                {`}`});
               </pre>
             </>
           )}

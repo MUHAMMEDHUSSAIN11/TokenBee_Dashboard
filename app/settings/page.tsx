@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Sidebar from "@/components/layout/Sidebar";
+import Header from "@/components/layout/Header";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getSubscription,
@@ -112,15 +113,15 @@ export default function SettingsPage() {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
 
-      <div className="flex flex-1 flex-col overflow-y-auto pl-60 bg-zinc-50 dark:bg-zinc-950 transition-colors">
-        <header className="flex h-16 shrink-0 items-center border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 px-6 backdrop-blur-sm sticky top-0 z-10 transition-colors">
-          <h1 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Settings
-          </h1>
-        </header>
+      <div className="flex flex-1 flex-col overflow-hidden pl-60">
+        <Header 
+          title="Settings" 
+          subtitle="Manage your account, billing, and API keys"
+        />
 
-        <main className="flex-1 p-6 md:p-8 space-y-8 max-w-4xl">
-          {isLoading ? (
+        <main className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-950 p-6 transition-colors">
+          <div className="mx-auto max-w-4xl space-y-8">
+            {isLoading ? (
             <div className="flex h-[400px] items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
             </div>
@@ -313,6 +314,7 @@ export default function SettingsPage() {
               </section>
             </>
           )}
+          </div>
         </main>
 
       </div>
