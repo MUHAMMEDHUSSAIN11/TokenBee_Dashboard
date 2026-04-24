@@ -103,7 +103,7 @@ export default function SettingsPage() {
 
   const isLoading = !userId || isLoadingSub || isLoadingKeys;
 
-  const freeLimit = 1000;
+  const freeLimit = 10000;
   const freeUsedPct = Math.min(
     100,
     ((subStatus?.freeRequestsUsed || 0) / freeLimit) * 100

@@ -60,6 +60,9 @@ export default function Sidebar() {
             alt="TokenBee" 
             className="absolute left-0 top-0 h-8 w-auto opacity-100 dark:opacity-0" 
           />
+          <span className="ml-2 rounded-md bg-violet-600/10 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-violet-600 ring-1 ring-inset ring-violet-600/20 dark:bg-violet-600/20 dark:text-violet-400">
+            BETA
+          </span>
         </Link>
       </div>
 
