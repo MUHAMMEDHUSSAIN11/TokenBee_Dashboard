@@ -34,6 +34,7 @@ export default function DocsPage() {
           
           <div className="mb-2 mt-6 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Feature Guide</div>
           <a href="#compression" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Compression Engine</a>
+          <a href="#rate-guide" className="rounded-md px-3 py-2 pl-6 text-sm font-medium text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900 transition-colors">↳ Rate Guide</a>
           <a href="#coding-agent" className="rounded-md px-3 py-2 text-sm font-medium text-violet-600 hover:bg-violet-50 dark:text-violet-400 dark:hover:bg-violet-950/30 transition-colors flex items-center gap-2">
             <Zap className="h-3 w-3" />
             Agent Compression
@@ -269,25 +270,125 @@ export default function DocsPage() {
               It detects and removes redundant tokens without degrading output quality.
             </p>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               {/* Compression Rates */}
               <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
                 <h4 className="font-bold text-zinc-900 dark:text-zinc-100 mb-4">Compression Rates</h4>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+                  The <code className="bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs font-mono">rate</code> parameter controls how aggressively TokenBee compresses your prompt. A lower rate means more compression (more tokens removed).
+                </p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                   {[
-                    { name: "Low", value: "0.75x", desc: "~25% savings", rec: false },
-                    { name: "Medium", value: "0.50x", desc: "~50% savings", rec: false },
-                    { name: "High", value: "0.33x", desc: "~67% savings", rec: true },
-                    { name: "Extreme", value: "0.20x", desc: "~80% savings", rec: false },
+                    { name: "Light", value: "0.75", savings: "~25%", desc: "Minimal trimming", color: "emerald" },
+                    { name: "Balanced", value: "0.50", savings: "~50%", desc: "Default • Best for most apps", color: "violet", rec: true },
+                    { name: "Aggressive", value: "0.33", savings: "~67%", desc: "Heavy reduction", color: "orange" },
+                    { name: "Extreme", value: "0.20", savings: "~80%", desc: "Maximum savings", color: "red" },
                   ].map((rate) => (
                     <div key={rate.name} className={`text-center p-4 rounded-xl border ${rate.rec ? 'border-violet-500/50 bg-violet-500/5' : 'border-zinc-200 dark:border-zinc-800'}`}>
                       <div className={`text-xs mb-1 uppercase tracking-wider ${rate.rec ? 'text-violet-500 font-bold' : 'text-zinc-500'}`}>
                         {rate.name} {rate.rec && "★"}
                       </div>
                       <div className={`font-mono text-xl font-bold ${rate.rec ? 'text-violet-500' : 'text-zinc-900 dark:text-white'}`}>{rate.value}</div>
-                      <div className="text-xs text-zinc-500 mt-1">{rate.desc}</div>
+                      <div className="text-xs text-zinc-500 mt-1">{rate.savings} savings</div>
+                      <div className="text-[10px] text-zinc-400 mt-1">{rate.desc}</div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Use Case Recommendation Table */}
+              <div id="rate-guide" className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 scroll-mt-24">
+                <h4 className="font-bold text-zinc-900 dark:text-zinc-100 mb-2 flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-violet-500" />
+                  Which Rate Should I Use?
+                </h4>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+                  Picking the right compression rate depends on your task. Here is our recommendation based on real-world testing:
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-zinc-200 dark:border-zinc-800">
+                        <th className="text-left py-3 pr-4 font-bold text-zinc-900 dark:text-zinc-100">Use Case</th>
+                        <th className="text-center py-3 px-4 font-bold text-zinc-900 dark:text-zinc-100">Rate</th>
+                        <th className="text-center py-3 px-4 font-bold text-zinc-900 dark:text-zinc-100">Savings</th>
+                        <th className="text-left py-3 pl-4 font-bold text-zinc-900 dark:text-zinc-100">Why</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                      {[
+                        { 
+                          use: "RAG / Document Q&A", 
+                          rate: "0.50", 
+                          savings: "~50%",
+                          why: "Retrieved chunks often contain redundant context. 0.50 strips the fluff while keeping all key facts.",
+                          badge: "bg-violet-500/10 text-violet-500"
+                        },
+                        { 
+                          use: "Chatbot / Conversational", 
+                          rate: "0.75", 
+                          savings: "~25%",
+                          why: "Conversations are already concise. Light compression avoids altering the user's tone or intent.",
+                          badge: "bg-emerald-500/10 text-emerald-500"
+                        },
+                        { 
+                          use: "Code Generation", 
+                          rate: "0.75", 
+                          savings: "~25%",
+                          why: "Code context is syntax-dense. Aggressive compression risks breaking variable names or logic. Keep it light.",
+                          badge: "bg-emerald-500/10 text-emerald-500"
+                        },
+                        { 
+                          use: "Summarization", 
+                          rate: "0.33", 
+                          savings: "~67%",
+                          why: "Input is often a long document being summarized. Heavy compression works because the LLM only needs key themes.",
+                          badge: "bg-orange-500/10 text-orange-500"
+                        },
+                        { 
+                          use: "Classification / Labeling", 
+                          rate: "0.33", 
+                          savings: "~67%",
+                          why: "Classification tasks need the core data, not verbose preambles. Aggressive compression is safe here.",
+                          badge: "bg-orange-500/10 text-orange-500"
+                        },
+                        { 
+                          use: "Legal / Medical / Compliance", 
+                          rate: "off", 
+                          savings: "0%",
+                          why: "Precision is critical. Disable compression entirely for domains where every word matters.",
+                          badge: "bg-red-500/10 text-red-500"
+                        },
+                      ].map((row) => (
+                        <tr key={row.use} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">
+                          <td className="py-3 pr-4 font-medium text-zinc-900 dark:text-zinc-100">{row.use}</td>
+                          <td className="py-3 px-4 text-center">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${row.badge}`}>
+                              {row.rate}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-center font-mono text-zinc-600 dark:text-zinc-400">{row.savings}</td>
+                          <td className="py-3 pl-4 text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">{row.why}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Pro Tips */}
+              <div className="p-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5">
+                <div className="flex gap-4">
+                  <Info className="h-6 w-6 text-emerald-500 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-emerald-600 dark:text-emerald-400 mb-2">Pro Tips</h4>
+                    <ul className="text-sm text-zinc-700 dark:text-zinc-300 space-y-2 leading-relaxed">
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> Free tier users are automatically clamped to <code className="bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded text-xs">0.50</code> (Balanced). Upgrade to unlock Aggressive and Extreme rates.</li>
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> Prompts under 1,000 tokens are automatically skipped (compression overhead would exceed savings).</li>
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> If the sidecar is temporarily unavailable, TokenBee gracefully degrades — your request is forwarded uncompressed with zero downtime.</li>
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> Check the <strong>Dashboard → Traces</strong> view to see exactly how each prompt was compressed and how much you saved.</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 

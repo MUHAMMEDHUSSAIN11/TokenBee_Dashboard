@@ -111,7 +111,7 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link href="#"  className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
+            <Link href="https://github.com/tokenBee/gateway" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
               <GitBranch className="h-5 w-5" />
             </Link>
             <ThemeToggle />
