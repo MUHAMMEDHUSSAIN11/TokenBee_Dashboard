@@ -103,11 +103,18 @@ export default function SettingsPage() {
 
   const isLoading = !userId || isLoadingSub || isLoadingKeys;
 
-  const freeLimit = 10000;
+  const freeTokenLimit = 1_000_000;
+  const tokensUsed = subStatus?.freeTokensUsed || 0;
   const freeUsedPct = Math.min(
     100,
-    ((subStatus?.freeRequestsUsed || 0) / freeLimit) * 100
+    (tokensUsed / freeTokenLimit) * 100
   );
+
+  const formatTokenCount = (n: number) => {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+    return n.toLocaleString();
+  };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -137,19 +144,19 @@ export default function SettingsPage() {
                       Usage & Billing
                     </h2>
                     <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                      Manage your subscription and track current usage.
+                      Manage your subscription and track current token usage.
                     </p>
                   </div>
                   <div className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-300 capitalize">
-                    {subStatus?.status === 'free' ? 'Free Plan' : 'Pay As You Go'}
+                    {subStatus?.status === 'free' ? 'Free Plan' : subStatus?.status === 'beta_premium' ? 'Beta Premium' : 'Pay As You Go'}
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-zinc-500 dark:text-zinc-400">Free requests used</span>
+                    <span className="text-zinc-500 dark:text-zinc-400">Free tokens used</span>
                     <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                      {subStatus?.freeRequestsUsed.toLocaleString()} / {freeLimit.toLocaleString()}
+                      {formatTokenCount(tokensUsed)} / {formatTokenCount(freeTokenLimit)}
                     </span>
                   </div>
                   
@@ -172,7 +179,7 @@ export default function SettingsPage() {
                   ) : (
                     <div className="pt-4 flex items-center justify-between">
                       <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                        Requests this month: <span className="font-medium text-zinc-900 dark:text-zinc-100">{subStatus?.requestsThisMonth.toLocaleString()}</span>
+                        Tokens this month: <span className="font-medium text-zinc-900 dark:text-zinc-100">{formatTokenCount(subStatus?.tokensThisMonth || 0)}</span>
                       </div>
                       <button
                         onClick={handleManageBilling}

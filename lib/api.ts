@@ -51,9 +51,9 @@ export interface ApiKeyDto {
 
 export interface SubscriptionStatus {
   userId: string;
-  status: 'free' | 'paid' | 'past_due';
-  requestsThisMonth: number;
-  freeRequestsUsed: number;
+  status: 'free' | 'paid' | 'past_due' | 'beta_premium';
+  tokensThisMonth: number;
+  freeTokensUsed: number;
   isOverFreeLimit: boolean;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
