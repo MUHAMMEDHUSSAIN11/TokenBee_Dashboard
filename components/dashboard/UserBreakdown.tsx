@@ -83,6 +83,9 @@ export default function UserBreakdown({ days }: UserBreakdownProps) {
               <TableHead className="text-right text-zinc-500 dark:text-zinc-400">
                 Requests
               </TableHead>
+              <TableHead className="text-right text-zinc-500 dark:text-zinc-400">
+                Tokens
+              </TableHead>
               <TableHead className="text-right text-zinc-500 dark:text-zinc-400">Cost</TableHead>
               <TableHead className="text-right text-zinc-500 dark:text-zinc-400">
                 Last Seen
@@ -102,6 +105,9 @@ export default function UserBreakdown({ days }: UserBreakdownProps) {
                 </TableCell>
                 <TableCell className="text-right tabular-nums text-zinc-600 dark:text-zinc-300">
                   {u.requests.toLocaleString()}
+                </TableCell>
+                <TableCell className="text-right tabular-nums text-zinc-600 dark:text-zinc-300">
+                  {u.totalTokens?.toLocaleString() ?? 0}
                 </TableCell>
                 <TableCell className="text-right tabular-nums text-zinc-900 dark:text-zinc-200">
                   {formatCost(u.costUsd)}

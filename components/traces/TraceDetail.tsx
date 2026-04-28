@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Copy, Check, ArrowLeft } from "lucide-react";
+import { Copy, Check, ArrowLeft, Zap } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -104,49 +104,84 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
         Back to Traces
       </Button>
 
-      {/* Metadata Row */}
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/80 p-4">
-        <Badge variant="secondary" className="bg-zinc-800 text-zinc-200">
-          {trace.model}
-        </Badge>
-        <Badge variant="secondary" className="bg-zinc-800 text-zinc-300">
-          {trace.provider}
-        </Badge>
-        <Separator orientation="vertical" className="h-5 bg-zinc-700" />
-        <Badge
-          className={
-            trace.statusCode >= 200 && trace.statusCode < 300
-              ? "bg-emerald-500/15 text-emerald-400"
-              : "bg-red-500/15 text-red-400"
-          }
-        >
-          {trace.statusCode}
-        </Badge>
-        <Separator orientation="vertical" className="h-5 bg-zinc-700" />
-        <span className="text-sm tabular-nums text-zinc-300">
-          {formatLatency(trace.latencyMs)}
-        </span>
-        <Separator orientation="vertical" className="h-5 bg-zinc-700" />
-        <span className="text-sm tabular-nums text-zinc-200">
-          {formatCost(trace.costUsd)}
-        </span>
-        <Separator orientation="vertical" className="h-5 bg-zinc-700" />
-        <span className="text-sm text-zinc-400">
-          {formatDate(trace.timestamp)}
-        </span>
-        <Separator orientation="vertical" className="h-5 bg-zinc-700" />
-        <span className="text-sm text-zinc-400">
-          Tokens: {formatTokens(trace.inputTokens)} in / {formatTokens(trace.outputTokens)} out
-        </span>
-        {trace.wasCompressed && (
-          <>
-            <Separator orientation="vertical" className="h-5 bg-zinc-700" />
-            <Badge className="bg-emerald-500/15 text-emerald-400">
-              Compressed
-            </Badge>
-          </>
+      {/* Metadata & Actions Row */}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900/80 p-5 shadow-sm">
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge variant="secondary" className="bg-zinc-800 text-zinc-200">
+            {trace.model}
+          </Badge>
+          <Badge variant="secondary" className="bg-zinc-800 text-zinc-300">
+            {trace.provider}
+          </Badge>
+          <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
+          <Badge
+            className={
+              trace.statusCode >= 200 && trace.statusCode < 300
+                ? "bg-emerald-500/15 text-emerald-400"
+                : "bg-red-500/15 text-red-400"
+            }
+          >
+            {trace.statusCode}
+          </Badge>
+          <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
+          <span className="text-sm tabular-nums text-zinc-300">
+            {formatLatency(trace.latencyMs)}
+          </span>
+          <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
+          <span className="text-sm tabular-nums text-zinc-200 font-medium">
+            {formatCost(trace.costUsd)}
+          </span>
+          <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
+          <span className="text-sm text-zinc-500">
+            {formatDate(trace.timestamp)}
+          </span>
+        </div>
+
+        {trace.sessionId && (
+          <Button
+            size="sm"
+            onClick={() => router.push(`/replay/${trace.sessionId}`)}
+            className="bg-violet-600 text-white hover:bg-violet-500"
+          >
+            <ArrowLeft className="mr-1.5 h-4 w-4 rotate-180" />
+            View Session Replay
+          </Button>
         )}
       </div>
+
+      {/* Compression Breakdown Card */}
+      {trace.wasCompressed && (
+        <div className="overflow-hidden rounded-xl border border-violet-500/20 bg-violet-500/5 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="flex items-center gap-2 text-sm font-bold text-violet-400">
+              <Zap className="h-4 w-4" />
+              Semantic Compression Breakdown
+            </h4>
+            <Badge className="bg-violet-500 text-white">
+              {Math.round(((trace.originalTokens - trace.inputTokens) / trace.originalTokens) * 100)}% Savings
+            </Badge>
+          </div>
+          <div className="grid grid-cols-3 gap-6">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Original Input</p>
+              <p className="text-xl font-mono font-bold text-zinc-400">{formatTokens(trace.originalTokens)}</p>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <ArrowLeft className="h-5 w-5 text-zinc-700 rotate-180" />
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Compressed Input</p>
+              <p className="text-xl font-mono font-bold text-emerald-400">{formatTokens(trace.inputTokens)}</p>
+            </div>
+          </div>
+          <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+            <div 
+              className="h-full bg-emerald-500" 
+              style={{ width: `${(trace.inputTokens / trace.originalTokens) * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Request / Response Tabs */}
       <Tabs defaultValue="request" className="w-full">
@@ -188,16 +223,16 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-zinc-400">
             Properties
           </p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {Object.entries(properties).map(([key, value]) => (
               <div
                 key={key}
-                className="flex items-center gap-2 rounded-md bg-zinc-800/50 px-3 py-2"
+                className="flex flex-col gap-1 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2"
               >
-                <span className="text-xs font-medium text-zinc-400">
-                  {key}:
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                  {key}
                 </span>
-                <span className="text-sm text-zinc-200">{value}</span>
+                <span className="truncate text-sm text-zinc-200" title={value}>{value}</span>
               </div>
             ))}
           </div>

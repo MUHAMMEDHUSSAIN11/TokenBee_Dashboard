@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Activity,
   DollarSign,
-  Zap,
+  Coins,
   PiggyBank,
   Clock,
   AlertTriangle,
@@ -49,7 +49,7 @@ export default function SummaryCards({ days }: SummaryCardsProps) {
     );
   }
 
-  const tokensSaved = data.totalOriginalTokens - data.totalInputTokens;
+  const totalTokens = data.totalInputTokens + data.totalOutputTokens;
   const errorRate =
     data.totalRequests > 0
       ? (data.errorRequests / data.totalRequests) * 100
@@ -64,18 +64,18 @@ export default function SummaryCards({ days }: SummaryCardsProps) {
       color: "default" as const,
     },
     {
+      title: "Total Tokens",
+      value: formatTokens(totalTokens),
+      subtext: `${formatTokens(data.totalInputTokens)} in · ${formatTokens(data.totalOutputTokens)} out`,
+      icon: Coins,
+      color: "default" as const,
+    },
+    {
       title: "Total Cost",
       value: formatCost(data.totalCostUsd),
       subtext: `last ${days} days`,
       icon: DollarSign,
       color: "default" as const,
-    },
-    {
-      title: "Tokens Saved",
-      value: formatTokens(tokensSaved > 0 ? tokensSaved : 0),
-      subtext: "via compression",
-      icon: Zap,
-      color: (tokensSaved > 0 ? "green" : "default") as "green" | "default",
     },
     {
       title: "Cost Saved",
@@ -89,14 +89,14 @@ export default function SummaryCards({ days }: SummaryCardsProps) {
     {
       title: "Avg Latency",
       value: formatLatency(data.avgLatencyMs),
-      subtext: "p50",
+      subtext: `p95 ${formatLatency(data.p95LatencyMs)}`,
       icon: Clock,
       color: "default" as const,
     },
     {
       title: "Error Rate",
       value: `${errorRate.toFixed(1)}%`,
-      subtext: `last ${days} days`,
+      subtext: `${data.errorRequests} errors / ${data.totalRequests} requests`,
       icon: AlertTriangle,
       color: (errorRate > 5 ? "red" : "default") as "red" | "default",
     },
@@ -110,3 +110,4 @@ export default function SummaryCards({ days }: SummaryCardsProps) {
     </div>
   );
 }
+

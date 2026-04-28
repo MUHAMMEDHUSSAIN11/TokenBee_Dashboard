@@ -10,6 +10,7 @@ export interface SummaryDto {
   totalCostUsd: number;
   totalSavedUsd: number;
   avgLatencyMs: number;
+  p95LatencyMs: number;
   errorRequests: number;
   compressedRequests: number;
 }
@@ -36,6 +37,7 @@ export interface ModelDto {
 export interface UserDto {
   userId: string | null;
   requests: number;
+  totalTokens: number;
   costUsd: number;
   lastSeen: string;
 }
@@ -72,6 +74,7 @@ export interface TraceDto {
   latencyMs: number;
   statusCode: number;
   userId: string | null;
+  sessionId: string | null;
   wasCompressed: boolean;
   requestBody: string | null;
   responseBody: string | null;

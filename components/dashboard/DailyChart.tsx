@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getDaily, type DailyDto } from "@/lib/api";
-import { formatCost } from "@/lib/utils";
+import { formatCost, formatTokens } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
@@ -26,17 +26,22 @@ function CustomTooltip({ active, payload, label }: any) {
   return (
     <div className="rounded-lg border border-zinc-200 bg-white px-3 py-2 shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
       <p className="mb-1 text-xs font-medium text-zinc-500 dark:text-zinc-300">{label}</p>
-      {payload.map((entry: any) => (
-        <p
-          key={String(entry.name)}
-          className="text-xs font-semibold"
-          style={{ color: entry.color }}
-        >
-          {entry.name === "requests"
-            ? `Requests: ${Number(entry.value).toLocaleString()}`
-            : `Cost: ${formatCost(Number(entry.value))}`}
-        </p>
-      ))}
+      {payload.map((entry: any) => {
+        let val = "";
+        if (entry.name === "requests") val = `Requests: ${Number(entry.value).toLocaleString()}`;
+        else if (entry.name === "tokens") val = `Tokens: ${formatTokens(Number(entry.value))}`;
+        else val = `Cost: ${formatCost(Number(entry.value))}`;
+        
+        return (
+          <p
+            key={String(entry.name)}
+            className="text-xs font-semibold"
+            style={{ color: entry.color }}
+          >
+            {val}
+          </p>
+        );
+      })}
     </div>
   );
 }
@@ -99,6 +104,7 @@ export default function DailyChart({ days }: DailyChartProps) {
     }),
     requests: d.requests,
     costUsd: d.costUsd,
+    tokens: d.inputTokens + d.outputTokens,
   }));
 
   return (
@@ -116,6 +122,10 @@ export default function DailyChart({ days }: DailyChartProps) {
               <linearGradient id="gradRequests" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
                 <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="gradTokens" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gradCost" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
@@ -151,14 +161,26 @@ export default function DailyChart({ days }: DailyChartProps) {
               yAxisId="left"
               type="monotone"
               dataKey="requests"
+              name="requests"
               stroke="#8b5cf6"
               fill="url(#gradRequests)"
               strokeWidth={2}
             />
             <Area
+              yAxisId="left"
+              type="monotone"
+              dataKey="tokens"
+              name="tokens"
+              stroke="#f59e0b"
+              fill="url(#gradTokens)"
+              strokeWidth={2}
+              hide // Hidden by default to avoid cluttering but available in tooltip
+            />
+            <Area
               yAxisId="right"
               type="monotone"
               dataKey="costUsd"
+              name="cost"
               stroke="#06b6d4"
               fill="url(#gradCost)"
               strokeWidth={2}
@@ -171,6 +193,10 @@ export default function DailyChart({ days }: DailyChartProps) {
             <span className="text-xs text-zinc-400">Requests</span>
           </div>
           <div className="flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-amber-500" />
+            <span className="text-xs text-zinc-400">Tokens</span>
+          </div>
+          <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-cyan-500" />
             <span className="text-xs text-zinc-400">Cost (USD)</span>
           </div>
@@ -179,3 +205,4 @@ export default function DailyChart({ days }: DailyChartProps) {
     </Card>
   );
 }
+
