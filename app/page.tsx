@@ -671,8 +671,6 @@ export default function LandingPage() {
           <div>
             <h4 className="mb-4 font-bold text-white uppercase tracking-wider text-xs">Legal</h4>
             <ul className="space-y-3">
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li><Link href="mailto:founders@tokenbee.io" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
