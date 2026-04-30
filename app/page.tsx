@@ -278,7 +278,7 @@ export default function LandingPage() {
                     <span className="text-zinc-200">
                       {activeTab === "typescript" ? "npm install @tokenbee/sdk" :
                         activeTab === "python" ? "pip install tokenbee-sdk" :
-                          "curl -X POST https://api.tokenbee.dev/v1/..."}
+                          "curl -X POST https://api.tokenbee.io/v1/..."}
                     </span>
                   </div>
                   <div className="h-2 w-2 rounded-full bg-violet-500 animate-pulse"></div>
@@ -616,7 +616,7 @@ export default function LandingPage() {
                 </li>
               </ul>
 
-              <Link href="mailto:sales@tokenbee.dev" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
+              <Link href="mailto:sales@tokenbee.io" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
                 Contact sales
               </Link>
             </div>
