@@ -379,7 +379,7 @@ export default function LandingPage() {
                   We use a proprietary semantic compression engine optimized for LLM calls. It detects and removes redundant semantic tokens without degrading output quality.
                 </p>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Unlike dumb token removal, TokenBee extracts your actual intent and compresses surrounding context dynamically. Save up to 50% without losing reasoning quality.
+                  Unlike dumb token removal, TokenBee extracts your actual intent and compresses surrounding context dynamically. Save up to 50% without losing reasoning quality, or turn it off entirely for high-precision tasks.
                 </p>
               </div>
             </ScrollFade>

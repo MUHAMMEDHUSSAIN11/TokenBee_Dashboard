@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import SummaryCards from "@/components/dashboard/SummaryCards";
+import QuotaWarning from "@/components/dashboard/QuotaWarning";
 import DailyChart from "@/components/dashboard/DailyChart";
 import ModelBreakdown from "@/components/dashboard/ModelBreakdown";
 import UserBreakdown from "@/components/dashboard/UserBreakdown";
@@ -36,6 +37,8 @@ export default function DashboardPage() {
 
         <main className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-950 p-6 transition-colors">
           <div className="mx-auto max-w-7xl space-y-6">
+            <QuotaWarning />
+
             {/* Summary Cards — 3x2 grid */}
             <SummaryCards days={days} />
 

@@ -384,8 +384,6 @@ export default function DocsPage() {
                     <h4 className="font-bold text-emerald-600 dark:text-emerald-400 mb-2">Pro Tips</h4>
                     <ul className="text-sm text-zinc-700 dark:text-zinc-300 space-y-2 leading-relaxed">
                       <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> Free tier users are automatically clamped to <code className="bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded text-xs">0.50</code> (Balanced). Upgrade to unlock Aggressive and Extreme rates.</li>
-                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> Prompts under 1,000 tokens are automatically skipped (compression overhead would exceed savings).</li>
-                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> If the sidecar is temporarily unavailable, TokenBee gracefully degrades — your request is forwarded uncompressed with zero downtime.</li>
                       <li className="flex gap-2"><span className="text-emerald-500 shrink-0">→</span> Check the <strong>Dashboard → Traces</strong> view to see exactly how each prompt was compressed and how much you saved.</li>
                     </ul>
                   </div>
@@ -397,7 +395,7 @@ export default function DocsPage() {
                 <h4 className="font-bold text-zinc-900 dark:text-zinc-100 mb-2">Controlling Compression</h4>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                   Compression defaults to <code className="bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs">auto</code>. 
-                  Disable for exact-inference pipelines:
+                  You can explicitly disable it or set a specific rate for your use case:
                 </p>
                 <pre className="bg-[#0d0d0d] p-4 rounded-xl font-mono text-sm text-zinc-300 overflow-x-auto">
                   <span className="text-zinc-500">{"// Disable compression for this call"}</span>{"\n"}
@@ -460,6 +458,18 @@ export default function DocsPage() {
             <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-8 text-lg">
               Group multi-step AI agent interactions into replay-able sessions. TokenBee records every span — LLM calls, tool calls, and decisions — so you can debug production failures frame-by-frame.
             </p>
+
+            <div className="bg-violet-500/5 border border-violet-500/20 rounded-2xl p-6 mb-8">
+              <h4 className="font-bold text-violet-600 dark:text-violet-400 mb-2">Why use sessionId?</h4>
+              <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                Modern AI agents often perform many turns to solve a single task. By passing a <code className="bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs font-mono">sessionId</code> in the SDK, you tell TokenBee to group these disparate requests into a single timeline. This is critical for:
+              </p>
+              <ul className="mt-4 space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <li className="flex gap-2"><span className="text-violet-500 shrink-0">→</span> <strong>Debugging Agents</strong>: See the full "reasoning chain" of a coding or RAG agent in one view.</li>
+                <li className="flex gap-2"><span className="text-violet-500 shrink-0">→</span> <strong>Customer Support</strong>: Map a specific user's chat history to a single ID for post-mortem analysis.</li>
+                <li className="flex gap-2"><span className="text-violet-500 shrink-0">→</span> <strong>A/B Testing</strong>: Group traces by a custom experiment ID to compare performance.</li>
+              </ul>
+            </div>
 
             <div className="space-y-6">
               <div className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">
