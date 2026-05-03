@@ -16,12 +16,13 @@ import {
 
 interface SummaryCardsProps {
   days: number;
+  accountId: string;
 }
 
-export default function SummaryCards({ days }: SummaryCardsProps) {
+export default function SummaryCards({ days, accountId }: SummaryCardsProps) {
   const { data, isLoading, isError, refetch } = useQuery<SummaryDto>({
-    queryKey: ["summary", { days }],
-    queryFn: () => getSummary({ days }),
+    queryKey: ["summary", { days, accountId }],
+    queryFn: () => getSummary({ days, accountId }),
   });
 
   if (isLoading) {

@@ -22,12 +22,13 @@ import { AlertTriangle } from "lucide-react";
 
 interface UserBreakdownProps {
   days: number;
+  accountId: string;
 }
 
-export default function UserBreakdown({ days }: UserBreakdownProps) {
+export default function UserBreakdown({ days, accountId }: UserBreakdownProps) {
   const { data, isLoading, isError, refetch } = useQuery<UserDto[]>({
-    queryKey: ["by-user", { days }],
-    queryFn: () => getByUser({ days }),
+    queryKey: ["by-user", { days, accountId }],
+    queryFn: () => getByUser({ days, accountId }),
   });
 
   if (isLoading) {

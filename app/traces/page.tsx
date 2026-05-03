@@ -1,12 +1,11 @@
-"use client";
-
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import TraceFilters from "@/components/traces/TraceFilters";
 import TraceTable from "@/components/traces/TraceTable";
 import { getTraces, getByModel, type TraceDto, type ModelDto } from "@/lib/api";
+import { createClient } from "@/lib/supabase/client";
 
 const PAGE_SIZE = 50;
 
@@ -16,6 +15,15 @@ export default function TracesPage() {
   const [model, setModel] = useState("");
   const [onlyErrors, setOnlyErrors] = useState(false);
   const [onlyCompressed, setOnlyCompressed] = useState(false);
+  const [accountId, setAccountId] = useState<string | null>(null);
+
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setAccountId(data.user.id);
+    });
+  }, [supabase]);
 
   const resetPagination = useCallback(() => setOffset(0), []);
 
@@ -46,22 +54,25 @@ export default function TracesPage() {
   const tracesQuery = useQuery<TraceDto[]>({
     queryKey: [
       "traces",
-      { limit: PAGE_SIZE, offset, userId, model, onlyErrors, onlyCompressed },
+      { limit: PAGE_SIZE, offset, userId, model, onlyErrors, onlyCompressed, accountId },
     ],
     queryFn: () =>
       getTraces({
         limit: PAGE_SIZE,
         offset,
+        accountId: accountId || undefined,
         userId: userId || undefined,
         model: model || undefined,
         onlyErrors: onlyErrors || undefined,
         onlyCompressed: onlyCompressed || undefined,
       }),
+    enabled: !!accountId,
   });
 
   const modelsQuery = useQuery<ModelDto[]>({
-    queryKey: ["by-model", { days: 30 }],
-    queryFn: () => getByModel({ days: 30 }),
+    queryKey: ["by-model", { days: 30, accountId }],
+    queryFn: () => getByModel({ days: 30, accountId: accountId || undefined }),
+    enabled: !!accountId,
   });
 
   return (

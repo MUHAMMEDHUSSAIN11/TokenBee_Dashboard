@@ -74,6 +74,7 @@ export interface TraceDto {
   latencyMs: number;
   statusCode: number;
   userId: string | null;
+  accountId: string | null;
   sessionId: string | null;
   wasCompressed: boolean;
   requestBody: string | null;
@@ -137,6 +138,7 @@ async function fetcher<T>(
 
 export function getSummary(params: {
   days?: number;
+  accountId?: string;
   userId?: string;
   property?: string;
   propertyValue?: string;
@@ -147,6 +149,7 @@ export function getSummary(params: {
 
 export function getDaily(params: {
   days?: number;
+  accountId?: string;
   userId?: string;
 }): Promise<DailyDto[]> {
   const query = buildQuery(params);
@@ -155,6 +158,7 @@ export function getDaily(params: {
 
 export function getByModel(params: {
   days?: number;
+  accountId?: string;
   userId?: string;
 }): Promise<ModelDto[]> {
   const query = buildQuery(params);
@@ -164,6 +168,7 @@ export function getByModel(params: {
 export function getByUser(params: {
   days?: number;
   limit?: number;
+  accountId?: string;
 }): Promise<UserDto[]> {
   const query = buildQuery(params);
   return fetcher<UserDto[]>(`/api/dashboard/by-user${query}`);
@@ -172,6 +177,7 @@ export function getByUser(params: {
 export function getTraces(params: {
   limit?: number;
   offset?: number;
+  accountId?: string;
   userId?: string;
   model?: string;
   onlyErrors?: boolean;
