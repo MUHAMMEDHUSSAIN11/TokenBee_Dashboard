@@ -198,6 +198,15 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
           >
             Response
           </TabsTrigger>
+          {trace.wasCompressed && trace.originalRequestBody && (
+            <TabsTrigger
+              value="comparison"
+              className="data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-300"
+            >
+              <Zap className="mr-1.5 h-3.5 w-3.5" />
+              Comparison
+            </TabsTrigger>
+          )}
         </TabsList>
         <TabsContent value="request" className="mt-4">
           <JsonViewer content={trace.requestBody} label="Request" />
@@ -205,6 +214,25 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
         <TabsContent value="response" className="mt-4">
           <JsonViewer content={trace.responseBody} label="Response" />
         </TabsContent>
+        {trace.wasCompressed && trace.originalRequestBody && (
+          <TabsContent value="comparison" className="mt-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Original Request</p>
+                <JsonViewer content={trace.originalRequestBody} label="Original" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between ml-1">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400">Compressed Request</p>
+                  <Badge variant="outline" className="h-4 text-[9px] border-violet-500/30 text-violet-400">
+                    {Math.round(((trace.originalTokens - trace.inputTokens) / trace.originalTokens) * 100)}% smaller
+                  </Badge>
+                </div>
+                <JsonViewer content={trace.requestBody} label="Compressed" />
+              </div>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Error Message */}

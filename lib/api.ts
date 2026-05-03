@@ -77,6 +77,7 @@ export interface TraceDto {
   sessionId: string | null;
   wasCompressed: boolean;
   requestBody: string | null;
+  originalRequestBody: string | null;
   responseBody: string | null;
   propertiesJson: string | null;
   errorMessage: string | null;

@@ -115,7 +115,7 @@ export default function LandingPage() {
               <GitBranch className="h-5 w-5" />
             </Link>
             <ThemeToggle />
-            <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
+            <Link href="/login?mode=signup" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
               Sign in
             </Link>
           </div>
@@ -136,7 +136,7 @@ export default function LandingPage() {
             <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Pricing</Link>
             <Link href="/docs" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Docs</Link>
             <hr className="border-zinc-100 dark:border-white/10" />
-            <Link href="/login" className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Sign in</Link>
+            <Link href="/login?mode=signup" className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Sign in</Link>
           </div>
         </div>
       )}
@@ -167,7 +167,7 @@ export default function LandingPage() {
 
           <div className="fade-up delay-300 mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/login"
+              href="/login?mode=signup"
               className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-zinc-900 px-8 py-4 text-base font-bold text-white transition-all hover:scale-[1.02] active:scale-95 sm:w-auto shadow-xl dark:bg-white dark:text-black dark:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
             >
               <span>Get started for free</span>
@@ -482,7 +482,7 @@ export default function LandingPage() {
                 </li>
               </ul>
 
-              <Link href="/login" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
+              <Link href="/login?mode=signup" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
                 Current Plan
               </Link>
             </div>
@@ -528,7 +528,7 @@ export default function LandingPage() {
                 </li>
               </ul>
 
-              <Link href="/login" className="mt-10 block w-full rounded-xl bg-zinc-900 dark:bg-white py-3 text-center text-sm font-bold text-white dark:text-black transition-transform hover:scale-[1.02]">
+              <Link href="/login?mode=signup" className="mt-10 block w-full rounded-xl bg-zinc-900 dark:bg-white py-3 text-center text-sm font-bold text-white dark:text-black transition-transform hover:scale-[1.02]">
                 Claim Free Beta Access
               </Link>
             </div>
@@ -577,7 +577,7 @@ export default function LandingPage() {
                 </li>
               </ul>
 
-              <Link href="/login" className="mt-10 block w-full rounded-xl bg-purple-600 py-3 text-center text-sm font-bold text-white transition-transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
+              <Link href="/login?mode=signup" className="mt-10 block w-full rounded-xl bg-purple-600 py-3 text-center text-sm font-bold text-white transition-transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
                 Claim Free Beta Access
               </Link>
             </div>
@@ -629,7 +629,7 @@ export default function LandingPage() {
           <p className="mt-6 text-xl text-zinc-600 dark:text-zinc-400">Join developers saving money and debugging easier with TokenBee.</p>
           <div className="mt-10">
             <Link
-              href="/login"
+              href="/login?mode=signup"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-900 dark:bg-white px-8 py-4 text-lg font-bold text-white dark:text-black transition-all hover:scale-[1.02] shadow-xl dark:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
             >
               Start saving tokens now

@@ -61,7 +61,7 @@ export default function TraceTable({
             <TableHead className="text-zinc-400">User</TableHead>
             <TableHead className="text-center text-zinc-400">Status</TableHead>
             <TableHead className="text-center text-zinc-400">
-              Compressed
+              Savings
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -141,8 +141,8 @@ export default function TraceTable({
                   </TableCell>
                   <TableCell className="text-center">
                     {trace.wasCompressed ? (
-                      <Badge className="bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/20">
-                        Yes
+                      <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/20 hover:bg-violet-500/30">
+                        {Math.round(((trace.originalTokens - trace.inputTokens) / trace.originalTokens) * 100)}%
                       </Badge>
                     ) : (
                       <span className="text-zinc-600">—</span>

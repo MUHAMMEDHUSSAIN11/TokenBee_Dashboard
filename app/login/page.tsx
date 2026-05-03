@@ -63,8 +63,14 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
+    // Handle mode selection from query params
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get("mode") === "signup") {
+      setIsSignUp(true);
+    }
+
     // Check if we're in the middle of an OAuth flow (detecting the code in URL)
-    if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
+    if (window.location.search.includes('code=')) {
       setIsVerifying(true);
     }
   }, []);
