@@ -296,7 +296,8 @@ export default function LandingPage() {
                     &nbsp;&nbsp;model: TokenBeeModel.OpenAIGPT4o,<br/>
                     &nbsp;&nbsp;input: {'{'}<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;messages: [{'{'} role: <span className="text-emerald-400">'user'</span>, content: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;compression: <span className="text-emerald-400">'auto'</span>,<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;strategy: CompressionStrategy.Smart,<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;context: TokenBeeContext.Auto,<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;rate: CompressionRate.High,<br/>
                     &nbsp;&nbsp;{'}'}<br/>
                     {'}'});<br/><br/>
@@ -315,7 +316,8 @@ export default function LandingPage() {
                     &nbsp;&nbsp;model=TokenBeeModel.OPENAI_GPT_4O,<br/>
                     &nbsp;&nbsp;input={'{'}<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'messages'</span>: [{'{'} <span className="text-emerald-400">'role'</span>: <span className="text-emerald-400">'user'</span>, <span className="text-emerald-400">'content'</span>: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'compression'</span>: <span className="text-emerald-400">'auto'</span>,<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'strategy'</span>: CompressionStrategy.SMART,<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'context'</span>: TokenBeeContext.AUTO,<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'rate'</span>: CompressionRate.MEDIUM<br/>
                     &nbsp;&nbsp;{'}'}<br/>
                     )<br/><br/>
@@ -374,12 +376,26 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent rounded-3xl opacity-0 transition-opacity group-hover:opacity-100"></div>
               <div className="relative z-10">
                 <Box className="mb-6 h-8 w-8 text-violet-600 dark:text-violet-400" />
-                <h3 className="mb-4 text-2xl font-bold">Query-Aware Compression</h3>
+                <h3 className="mb-4 text-2xl font-bold">Hive &amp; Smart</h3>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-                  We use a proprietary semantic compression engine optimized for LLM calls. It detects and removes redundant semantic tokens without degrading output quality.
+                  TokenBee features two proprietary semantic compression models optimized for different workloads.
                 </p>
+                <div className="space-y-3 mb-4">
+                  <div className="flex gap-2 text-sm">
+                    <div className="h-5 w-5 shrink-0 rounded-full bg-violet-500/10 flex items-center justify-center">
+                      <div className="h-1.5 w-1.5 rounded-full bg-violet-500"></div>
+                    </div>
+                    <span><strong className="text-zinc-800 dark:text-zinc-200">Hive:</strong> Context-agnostic compression for documents and system prompts.</span>
+                  </div>
+                  <div className="flex gap-2 text-sm">
+                    <div className="h-5 w-5 shrink-0 rounded-full bg-fuchsia-500/10 flex items-center justify-center">
+                      <div className="h-1.5 w-1.5 rounded-full bg-fuchsia-500"></div>
+                    </div>
+                    <span><strong className="text-zinc-800 dark:text-zinc-200">Smart:</strong> Query-specific RAG compression that preserves info relevant to user intent.</span>
+                  </div>
+                </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Unlike dumb token removal, TokenBee extracts your actual intent and compresses surrounding context dynamically. Save up to 50% without losing reasoning quality, or turn it off entirely for high-precision tasks.
+                  Unlike simple truncation, our models extract intent and compress surrounding context dynamically. Save up to 50% without losing reasoning quality.
                 </p>
               </div>
             </ScrollFade>
@@ -417,14 +433,14 @@ export default function LandingPage() {
                   <Zap className="h-8 w-8 fill-white" />
                 </div>
                 <div className="text-center md:text-left">
-                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">Upcoming: Semantic Agent Compression</h3>
+                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">Intelligent Context-Aware Compression</h3>
                   <p className="mt-2 text-zinc-600 dark:text-zinc-400 text-lg">
-                    We are building a specialized compression mode for autonomous coding agents. Minimize context bloat in deep RAG loops without losing reasoning precision.
+                    TokenBee now automatically detects if your payload is a <code className="text-violet-400 font-mono">conversation</code>, <code className="text-violet-400 font-mono">document</code>, or <code className="text-violet-400 font-mono">code</code>. We apply specialized semantic rules per-message to minimize context bloat while protecting reasoning precision.
                   </p>
                 </div>
                 <div className="md:ml-auto shrink-0">
                   <span className="px-4 py-2 rounded-full border border-violet-500/50 text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest whitespace-nowrap">
-                    Coming Soon
+                    Active
                   </span>
                 </div>
               </div>

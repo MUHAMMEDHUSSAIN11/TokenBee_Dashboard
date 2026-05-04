@@ -127,7 +127,8 @@ export default function DocsPage() {
                     {"  "}model: TokenBeeModel.AnthropicClaude3_5_Sonnet,{"\n"}
                     {"  "}input: {"{"}{"\n"}
                     {"    "}messages: [{"{"} role: <span className="text-emerald-400">&apos;user&apos;</span>, content: <span className="text-emerald-400">&apos;Explain token compression&apos;</span> {"}"}],{"\n"}
-                    {"    "}compression: <span className="text-emerald-400">&apos;auto&apos;</span>,{"\n"}
+                    {"    "}strategy: CompressionStrategy.Smart,{"\n"}
+                    {"    "}context: TokenBeeContext.Auto,{"\n"}
                     {"    "}rate: CompressionRate.High,{"\n"}
                     {"  "}{"}"}{"\n"}
                     {"}"});{"\n\n"}
@@ -146,7 +147,8 @@ export default function DocsPage() {
                     {"  "}model=TokenBeeModel.ANTHROPIC_CLAUDE_3_5_SONNET,{"\n"}
                     {"  "}input={"{"}{"\n"}
                     {"    "}<span className="text-emerald-400">&apos;messages&apos;</span>: [{"{"}<span className="text-emerald-400">&apos;role&apos;</span>: <span className="text-emerald-400">&apos;user&apos;</span>, <span className="text-emerald-400">&apos;content&apos;</span>: <span className="text-emerald-400">&apos;Explain token compression&apos;</span>{"}"}],{"\n"}
-                    {"    "}<span className="text-emerald-400">&apos;compression&apos;</span>: <span className="text-emerald-400">&apos;auto&apos;</span>,{"\n"}
+                    {"    "}<span className="text-emerald-400">&apos;strategy&apos;</span>: CompressionStrategy.SMART,{"\n"}
+                    {"    "}<span className="text-emerald-400">&apos;context&apos;</span>: TokenBeeContext.AUTO,{"\n"}
                     {"    "}<span className="text-emerald-400">&apos;rate&apos;</span>: CompressionRate.HIGH,{"\n"}
                     {"  "}{"}"}{"\n"}
                     ){"\n\n"}
@@ -262,15 +264,28 @@ export default function DocsPage() {
               </div>
               <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Compression Engine</h2>
             </div>
-            <p className="mb-4 text-zinc-600 dark:text-zinc-400 leading-relaxed text-lg italic">
-              A proprietary semantic compression engine optimized for LLM calls.
-            </p>
-            <p className="mb-8 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              Unlike simple truncation, TokenBee extracts the core intent of your prompt and compresses surrounding context using semantic folding. 
-              It detects and removes redundant tokens without degrading output quality.
-            </p>
+                      <p className="mb-4 text-zinc-600 dark:text-zinc-400 leading-relaxed text-lg italic">
+               Advanced semantic compression with Strategy and Context awareness.
+             </p>
+             <p className="mb-8 text-zinc-600 dark:text-zinc-400 leading-relaxed">
+               TokenBee uses proprietary models to extract the core intent of your prompt and compress surrounding context. We offer two distinct compression strategies:
+             </p>
 
-            <div className="space-y-8">
+             <div className="grid gap-6 md:grid-cols-2 mb-12">
+               <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+                 <h4 className="font-bold text-violet-500 mb-2">Hive (v1)</h4>
+                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                   <strong>General-purpose compression.</strong> Removes redundant semantic tokens while preserving the overall meaning. Ideal for pre-compressing documents, long system prompts, or static context.
+                 </p>
+               </div>
+               <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+                 <h4 className="font-bold text-fuchsia-500 mb-2">Smart (v1)</h4>
+                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                   <strong>Query-specific compression.</strong> Preserves tokens relevant to a specific user question while aggressively compressing the rest. Ideal for RAG pipelines and Q&A systems.
+                 </p>
+               </div>
+             </div>
+             <div className="space-y-8">
               {/* Compression Rates */}
               <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
                 <h4 className="font-bold text-zinc-900 dark:text-zinc-100 mb-4">Compression Rates</h4>
@@ -390,60 +405,61 @@ export default function DocsPage() {
                 </div>
               </div>
 
-              {/* Toggle compression */}
+              {/* Context Awareness */}
               <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-                <h4 className="font-bold text-zinc-900 dark:text-zinc-100 mb-2">Controlling Compression</h4>
+                <h4 className="font-bold text-zinc-900 dark:text-zinc-100 mb-2">Intelligent Context Detection</h4>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-                  Compression defaults to <code className="bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs">auto</code>. 
-                  You can explicitly disable it or set a specific rate for your use case:
+                  TokenBee now features per-message context awareness. It automatically identifies the type of content and applies specialized protection rules.
                 </p>
-                <pre className="bg-[#0d0d0d] p-4 rounded-xl font-mono text-sm text-zinc-300 overflow-x-auto">
-                  <span className="text-zinc-500">{"// Disable compression for this call"}</span>{"\n"}
-                  compression: <span className="text-emerald-400">&apos;off&apos;</span>{"\n\n"}
-                  <span className="text-zinc-500">{"// Or set an explicit rate"}</span>{"\n"}
-                  rate: CompressionRate.Low
-                </pre>
-              </div>
-            </div>
-          </section>
+                <div className="grid gap-3 sm:grid-cols-2 mb-6">
+                  <div className="flex items-center gap-2 text-xs text-zinc-500"><div className="h-1.5 w-1.5 rounded-full bg-violet-500"></div> <strong>Conversation:</strong> Protects latest messages</div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-500"><div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div> <strong>Code:</strong> Preserves syntax and logic</div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-500"><div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div> <strong>Document:</strong> Aggressive semantic folding</div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-500"><div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div> <strong>Agent:</strong> Compresses tool history</div>
+                </div>
+                 <pre className="bg-[#0d0d0d] p-4 rounded-xl font-mono text-sm text-zinc-300 overflow-x-auto">
+                   <span className="text-zinc-500">{"// Explicitly set context for maximum precision"}</span>{"\n"}
+                   context: TokenBeeContext.Code,{"\n"}
+                   strategy: CompressionStrategy.Hive
+                 </pre>
+               </div>
+             </div>
+           </section>
 
-          {/* ── CODING AGENT COMPRESSION — COMING SOON ────────────── */}
-          <section id="coding-agent" className="mb-20 scroll-mt-24">
-            <div className="p-8 rounded-3xl border-2 border-dashed border-violet-500/30 bg-violet-500/5 relative overflow-hidden">
-              <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase tracking-wider animate-pulse">
-                Coming Soon
-              </div>
-              <div className="flex items-start gap-4 mb-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500 text-white shadow-lg shrink-0">
-                  <Zap className="h-6 w-6 fill-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Semantic Coding Agent Compression</h2>
-                  <p className="mt-2 text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    We are building a specialized compression mode dedicated to <strong>Autonomous Coding Agents</strong> — tools like Devin, Cursor, and custom RAG agents that send large, multi-turn code contexts to LLMs.
-                  </p>
-                </div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2 mb-6">
-                {[
-                  "Codebase-aware context pruning",
-                  "Diff-optimized semantic summarization",
-                  "Tool-call history compression",
-                  "Deep RAG loop optimization",
-                  "AST-aware token reduction",
-                  "Multi-file context deduplication",
-                ].map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300">
-                    <div className="h-1.5 w-1.5 rounded-full bg-violet-500 shrink-0"></div>
-                    {item}
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Interested in early access? Contact us at <a href="mailto:founders@tokenbee.io" className="text-violet-500 hover:text-violet-400 underline">founders@tokenbee.io</a>
-              </p>
-            </div>
-          </section>
+           {/* ── CODING AGENT COMPRESSION ────────────────────────────── */}
+           <section id="coding-agent" className="mb-20 scroll-mt-24">
+             <div className="p-8 rounded-3xl border-2 border-violet-500/30 bg-violet-500/5 relative overflow-hidden">
+               <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase tracking-wider">
+                 v1.2 feature
+               </div>
+               <div className="flex items-start gap-4 mb-6">
+                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500 text-white shadow-lg shrink-0">
+                   <Zap className="h-6 w-6 fill-white" />
+                 </div>
+                 <div>
+                   <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Intelligent Context Protection</h2>
+                   <p className="mt-2 text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                     TokenBee v1.2 introduces **Context-Aware Compression**. This mode is specifically designed for complex agentic workflows where maintaining reasoning state is critical.
+                   </p>
+                 </div>
+               </div>
+               <div className="grid gap-4 md:grid-cols-2">
+                 {[
+                   "Auto-detection of conversation patterns",
+                   "Code-block preservation via Regex",
+                   "Per-message compression policies",
+                   "Recent message protection (Sliding Window)",
+                   "System role preservation",
+                   "Semantic intent extraction",
+                 ].map((item) => (
+                   <div key={item} className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300">
+                     <div className="h-1.5 w-1.5 rounded-full bg-violet-500 shrink-0"></div>
+                     {item}
+                   </div>
+                 ))}
+               </div>
+             </div>
+           </section>
 
           <hr className="my-16 border-zinc-200 dark:border-zinc-800" />
 

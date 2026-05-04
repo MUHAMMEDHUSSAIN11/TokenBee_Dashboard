@@ -90,6 +90,16 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
   }
 
   const hasProperties = Object.keys(properties).length > 0;
+  
+  // Parse compression metadata
+  let compMeta: any = {};
+  if (trace.compressionMetadataJson) {
+    try {
+      compMeta = JSON.parse(trace.compressionMetadataJson);
+    } catch {
+      // ignore
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -179,6 +189,28 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
               className="h-full bg-emerald-500" 
               style={{ width: `${(trace.inputTokens / trace.originalTokens) * 100}%` }}
             />
+          </div>
+          
+          {/* Strategy & Context Tags */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {compMeta.compressionMode && (
+              <div className="flex items-center gap-1.5 rounded-md bg-violet-500/10 px-2 py-1 border border-violet-500/20">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400">Strategy:</span>
+                <span className="text-xs text-violet-200 capitalize">{compMeta.compressionMode.replace('_v1', '')}</span>
+              </div>
+            )}
+            {compMeta.contextType && (
+              <div className="flex items-center gap-1.5 rounded-md bg-emerald-500/10 px-2 py-1 border border-emerald-500/20">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Context:</span>
+                <span className="text-xs text-emerald-200 capitalize">{compMeta.contextType}</span>
+              </div>
+            )}
+            {compMeta.compressionQuery && (
+              <div className="flex items-center gap-1.5 rounded-md bg-blue-500/10 px-2 py-1 border border-blue-500/20">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Query Used:</span>
+                <span className="text-xs text-blue-200 truncate max-w-[200px]" title={compMeta.compressionQuery}>{compMeta.compressionQuery}</span>
+              </div>
+            )}
           </div>
         </div>
       )}

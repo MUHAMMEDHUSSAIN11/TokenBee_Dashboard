@@ -81,6 +81,7 @@ export interface TraceDto {
   originalRequestBody: string | null;
   responseBody: string | null;
   propertiesJson: string | null;
+  compressionMetadataJson: string | null;
   errorMessage: string | null;
 }
 
