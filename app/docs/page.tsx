@@ -271,19 +271,74 @@ export default function DocsPage() {
                TokenBee uses proprietary models to extract the core intent of your prompt and compress surrounding context. We offer two distinct compression strategies:
              </p>
 
+             <div className="grid gap-6 md:grid-cols-2 mb-8">
+               <div className="p-6 rounded-2xl border border-violet-500/30 bg-violet-500/5">
+                 <div className="flex items-center gap-2 mb-3">
+                   <span className="px-2 py-0.5 rounded-full bg-violet-500 text-white text-[10px] font-bold uppercase tracking-wider">Hive</span>
+                   <span className="text-xs text-zinc-500">General-purpose</span>
+                 </div>
+                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+                   Compresses all content equally, without needing to know the user&apos;s question. Best for static, reusable context.
+                 </p>
+                 <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Use Hive when:</p>
+                 <ul className="space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+                   <li className="flex gap-2"><span className="text-violet-400 shrink-0">→</span> Pre-compressing a large document before storing it</li>
+                   <li className="flex gap-2"><span className="text-violet-400 shrink-0">→</span> Compressing a long system prompt reused across many calls</li>
+                   <li className="flex gap-2"><span className="text-violet-400 shrink-0">→</span> You don&apos;t have a user query to guide compression</li>
+                 </ul>
+               </div>
+               <div className="p-6 rounded-2xl border border-fuchsia-500/30 bg-fuchsia-500/5">
+                 <div className="flex items-center gap-2 mb-3">
+                   <span className="px-2 py-0.5 rounded-full bg-fuchsia-500 text-white text-[10px] font-bold uppercase tracking-wider">Smart</span>
+                   <span className="text-xs text-zinc-500">Query-aware</span>
+                 </div>
+                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+                   Scores every token for relevance to the user&apos;s question. Aggressively removes unrelated content while protecting answer-critical tokens.
+                 </p>
+                 <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Use Smart when:</p>
+                 <ul className="space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+                   <li className="flex gap-2"><span className="text-fuchsia-400 shrink-0">→</span> Building a RAG pipeline (user asks a question over documents)</li>
+                   <li className="flex gap-2"><span className="text-fuchsia-400 shrink-0">→</span> Running a Q&A chatbot over long conversation history</li>
+                   <li className="flex gap-2"><span className="text-fuchsia-400 shrink-0">→</span> You have a clear user query to anchor compression around</li>
+                 </ul>
+               </div>
+             </div>
+
+             {/* Code examples */}
              <div className="grid gap-6 md:grid-cols-2 mb-12">
-               <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
-                 <h4 className="font-bold text-violet-500 mb-2">Hive (v1)</h4>
-                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                   <strong>General-purpose compression.</strong> Removes redundant semantic tokens while preserving the overall meaning. Ideal for pre-compressing documents, long system prompts, or static context.
-                 </p>
+               <div>
+                 <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">TypeScript</p>
+                 <pre className="bg-[#0d0d0d] p-4 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto leading-relaxed">
+                   <span className="text-zinc-500">{"// RAG pipeline — Smart knows the query"}</span>{"\n"}
+                   strategy: CompressionStrategy.<span className="text-fuchsia-400">Smart</span>,{"\n"}
+                   context: TokenBeeContext.<span className="text-zinc-300">Auto</span>,{"\n\n"}
+                   <span className="text-zinc-500">{"// Document store — Hive, no query needed"}</span>{"\n"}
+                   strategy: CompressionStrategy.<span className="text-violet-400">Hive</span>,{"\n"}
+                   context: TokenBeeContext.<span className="text-blue-400">Document</span>,
+                 </pre>
                </div>
-               <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
-                 <h4 className="font-bold text-fuchsia-500 mb-2">Smart (v1)</h4>
-                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                   <strong>Query-specific compression.</strong> Preserves tokens relevant to a specific user question while aggressively compressing the rest. Ideal for RAG pipelines and Q&A systems.
-                 </p>
+               <div>
+                 <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Python</p>
+                 <pre className="bg-[#0d0d0d] p-4 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto leading-relaxed">
+                   <span className="text-zinc-500">{"# RAG pipeline — Smart knows the query"}</span>{"\n"}
+                   <span className="text-emerald-400">&apos;strategy&apos;</span>: CompressionStrategy.SMART,{"\n"}
+                   <span className="text-emerald-400">&apos;context&apos;</span>: TokenBeeContext.AUTO,{"\n\n"}
+                   <span className="text-zinc-500">{"# Document store — Hive, no query needed"}</span>{"\n"}
+                   <span className="text-emerald-400">&apos;strategy&apos;</span>: CompressionStrategy.HIVE,{"\n"}
+                   <span className="text-emerald-400">&apos;context&apos;</span>: TokenBeeContext.DOCUMENT,
+                 </pre>
                </div>
+             </div>
+
+             {/* Auto-detection explainer */}
+             <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-amber-500/5 border-amber-500/20 mb-12">
+               <h4 className="font-bold text-amber-500 mb-2 text-sm">How does auto-detection work?</h4>
+               <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                 When <code className="bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-xs">context: auto</code> is set (the default), TokenBee analyses your message array on every call. 
+                 If one message is significantly longer than others, it is treated as a <strong>document</strong>. 
+                 If there are 4+ messages, it is treated as a <strong>conversation</strong>. 
+                 You can always override this by passing an explicit context value for maximum precision.
+               </p>
              </div>
              <div className="space-y-8">
               {/* Compression Rates */}
