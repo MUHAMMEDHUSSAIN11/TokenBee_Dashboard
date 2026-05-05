@@ -332,6 +332,8 @@ export default function LandingPage() {
                     &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Provider: mistral"</span> \<br />
                     &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Model: mistral-large-latest"</span> \<br />
                     &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Compression: auto"</span> \<br />
+                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Strategy: smart"</span> \<br />
+                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Context: auto"</span> \<br />
                     &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Rate: 0.33"</span> \<br />
                     &nbsp;&nbsp;-d <span className="text-emerald-400">{`'{"messages": [{"role":"user", "content":"Explain..."}]}'`}</span>
                   </div>

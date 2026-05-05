@@ -25,7 +25,14 @@ export const metadata: Metadata = {
     type: 'website',
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+    other: [
+      { rel: "mask-icon", url: "/favicon.svg", color: "#7c3aed" },
+    ],
   },
 };
 
