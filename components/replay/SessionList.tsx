@@ -121,7 +121,7 @@ export default function SessionList() {
               <pre className="mt-4 rounded-lg border border-zinc-800 bg-[#0d0d0d] p-4 text-xs text-zinc-300 overflow-x-auto text-left w-full max-w-md">
                 <span className="text-zinc-500">{"// TokenBee SDK"}</span><br/>
                 <span className="text-fuchsia-400">await</span> client.send({`{`}<br/>
-                &nbsp;&nbsp;model: TokenBeeModel.OpenAIGPT4o,<br/>
+                &nbsp;&nbsp;model: TokenBeeModel.AnthropicClaudeSonnet4,<br/>
                 &nbsp;&nbsp;input: {`{`}<br/>
                 &nbsp;&nbsp;&nbsp;&nbsp;messages: [...],<br/>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-orange-400">sessionId</span>: <span className="text-emerald-400">'my-agent-run-001'</span><br/>

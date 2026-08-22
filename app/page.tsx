@@ -276,8 +276,8 @@ export default function LandingPage() {
                     <Terminal className="h-4 w-4 text-violet-400" />
                     <span className="text-zinc-500 select-none">$</span>
                     <span className="text-zinc-200">
-                      {activeTab === "typescript" ? "npm install @tokenbee/sdk" :
-                        activeTab === "python" ? "pip install tokenbee-sdk" :
+                      {activeTab === "typescript" ? "npm install @tokenbee/sdk@2.0.0" :
+                        activeTab === "python" ? "pip install tokenbee-sdk==2.0.0" :
                           "curl -X POST https://api.tokenbee.io/v1/..."}
                     </span>
                   </div>
@@ -293,7 +293,7 @@ export default function LandingPage() {
                     &nbsp;&nbsp;llmKey: <span className="text-orange-400">'sk-your-provider-key'</span><br/>
                     {'}'});<br/><br/>
                     <span className="text-fuchsia-400">const</span> res = <span className="text-fuchsia-400">await</span> bee.send({'{'}<br/>
-                    &nbsp;&nbsp;model: TokenBeeModel.OpenAIGPT4o,<br/>
+                    &nbsp;&nbsp;model: TokenBeeModel.AnthropicClaudeSonnet4,<br/>
                     &nbsp;&nbsp;input: {'{'}<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;messages: [{'{'} role: <span className="text-emerald-400">'user'</span>, content: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;strategy: CompressionStrategy.Smart,<br/>
@@ -313,7 +313,7 @@ export default function LandingPage() {
                     &nbsp;&nbsp;llm_key=<span className="text-orange-400">'sk-your-provider-key'</span><br/>
                     )<br/><br/>
                     res = bee.send(<br/>
-                    &nbsp;&nbsp;model=TokenBeeModel.OPENAI_GPT_4O,<br/>
+                    &nbsp;&nbsp;model=TokenBeeModel.ANTHROPIC_CLAUDE_SONNET_4,<br/>
                     &nbsp;&nbsp;input={'{'}<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'messages'</span>: [{'{'} <span className="text-emerald-400">'role'</span>: <span className="text-emerald-400">'user'</span>, <span className="text-emerald-400">'content'</span>: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
                     &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'strategy'</span>: CompressionStrategy.SMART,<br/>

@@ -103,7 +103,7 @@ export default function DocsPage() {
                   <span>Terminal</span>
                 </div>
                 <pre className="font-mono text-sm text-zinc-200 overflow-x-auto">
-                  <span className="text-zinc-500 select-none">$ </span>{activeTab === 'typescript' ? 'npm install @tokenbee/sdk' : 'pip install tokenbee-sdk'}
+                  <span className="text-zinc-500 select-none">$ </span>{activeTab === 'typescript' ? 'npm install @tokenbee/sdk@2.0.0' : 'pip install tokenbee-sdk==2.0.0'}
                 </pre>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function DocsPage() {
                     {"}"});{"\n\n"}
                     <span className="text-zinc-500">{"// Send — model enum handles routing automatically"}</span>{"\n"}
                     <code className="text-violet-400">const</code> res = <code className="text-violet-400">await</code> client.send({"{"}{"\n"}
-                    {"  "}model: TokenBeeModel.AnthropicClaude3_5_Sonnet,{"\n"}
+                    {"  "}model: TokenBeeModel.AnthropicClaudeSonnet4,{"\n"}
                     {"  "}input: {"{"}{"\n"}
                     {"    "}messages: [{"{"} role: <span className="text-emerald-400">&apos;user&apos;</span>, content: <span className="text-emerald-400">&apos;Explain token compression&apos;</span> {"}"}],{"\n"}
                     {"    "}strategy: CompressionStrategy.Smart,{"\n"}
@@ -144,7 +144,7 @@ export default function DocsPage() {
                     ){"\n\n"}
                     <span className="text-zinc-500">{"# Send — model enum handles provider routing automatically"}</span>{"\n"}
                     response = client.send({"\n"}
-                    {"  "}model=TokenBeeModel.ANTHROPIC_CLAUDE_3_5_SONNET,{"\n"}
+                    {"  "}model=TokenBeeModel.ANTHROPIC_CLAUDE_SONNET_4,{"\n"}
                     {"  "}input={"{"}{"\n"}
                     {"    "}<span className="text-emerald-400">&apos;messages&apos;</span>: [{"{"}<span className="text-emerald-400">&apos;role&apos;</span>: <span className="text-emerald-400">&apos;user&apos;</span>, <span className="text-emerald-400">&apos;content&apos;</span>: <span className="text-emerald-400">&apos;Explain token compression&apos;</span>{"}"}],{"\n"}
                     {"    "}<span className="text-emerald-400">&apos;strategy&apos;</span>: CompressionStrategy.SMART,{"\n"}
@@ -231,12 +231,12 @@ export default function DocsPage() {
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                { provider: "OpenAI", models: ["GPT-4.5", "GPT-4o", "GPT-4o Mini", "o1", "o1-mini", "o3-mini"], color: "emerald" },
-                { provider: "Anthropic", models: ["Claude 3.7 Sonnet", "Claude 3.5 Sonnet", "Claude 3.5 Haiku", "Claude 3 Opus"], color: "orange" },
-                { provider: "Google", models: ["Gemini 3.1 Pro", "Gemini 3.1 Flash", "Gemini 2.5 Pro", "Gemini 2.0 Flash"], color: "blue" },
+                { provider: "OpenAI", models: ["GPT-5.6 Sol", "GPT-5.6 Terra", "GPT-5.6 Luna", "GPT-5 mini", "GPT-5 nano", "GPT-4.1", "GPT-4o"], color: "emerald" },
+                { provider: "Anthropic", models: ["Claude Sonnet 4", "Claude Opus 4", "Claude Haiku 4", "Claude 3.7 Sonnet", "Claude 3.5 Sonnet"], color: "orange" },
+                { provider: "Google", models: ["Gemini 2.5 Pro", "Gemini 2.5 Flash", "Gemini 2.0 Flash"], color: "blue" },
                 { provider: "Mistral", models: ["Mistral Large", "Mistral Small", "Pixtral Large", "Mistral Nemo"], color: "red" },
                 { provider: "Perplexity", models: ["Sonar Pro", "Sonar Reasoning", "Sonar"], color: "cyan" },
-                { provider: "Groq", models: ["Llama 3.3 70B", "Llama 3.1 8B", "DeepSeek R1 Distill 70B"], color: "pink" },
+                { provider: "Groq", models: ["GPT-OSS 120B", "GPT-OSS 20B", "Qwen3.6 27B", "Compound"], color: "pink" },
                 { provider: "xAI", models: ["Grok-3", "Grok-2", "Grok-2 Mini"], color: "zinc" },
               ].map((group) => (
                 <div key={group.provider} className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
@@ -551,7 +551,7 @@ export default function DocsPage() {
                   <pre className="font-mono text-sm text-zinc-300 overflow-x-auto leading-relaxed">
                     <span className="text-zinc-500">{"// Automatically group traces into a session"}</span>{"\n"}
                     <code className="text-violet-400">const</code> res = <code className="text-violet-400">await</code> client.send({"{"}{"\n"}
-                    {"  "}model: TokenBeeModel.OpenAIGPT4o,{"\n"}
+                    {"  "}model: TokenBeeModel.AnthropicClaudeSonnet4,{"\n"}
                     {"  "}input: {"{"}{"\n"}
                     {"    "}messages: [{"{"} role: <span className="text-emerald-400">&apos;user&apos;</span>, content: <span className="text-emerald-400">&apos;Fix the login bug&apos;</span> {"}"}],{"\n"}
                     {"    "}<span className="text-orange-400">sessionId</span>: <span className="text-emerald-400">&apos;debug-session-42&apos;</span>,{"\n"}
@@ -656,7 +656,7 @@ export default function DocsPage() {
                   <pre className="font-mono text-[13px] sm:text-sm text-zinc-300 overflow-x-auto leading-relaxed">
                     <span className="text-zinc-500">{"// Disable features per-request"}</span>{"\n"}
                     <code className="text-violet-400">const</code> res = <code className="text-violet-400">await</code> client.send({"{"}{"\n"}
-                    {"  "}model: TokenBeeModel.OpenAIGPT4o,{"\n"}
+                    {"  "}model: TokenBeeModel.AnthropicClaudeSonnet4,{"\n"}
                     {"  "}input: {"{"}{"\n"}
                     {"    "}messages: [...],{"\n"}
                     {"    "}<span className="text-zinc-500">{"// 1. Disable payload logging & replays completely"}</span>{"\n"}
