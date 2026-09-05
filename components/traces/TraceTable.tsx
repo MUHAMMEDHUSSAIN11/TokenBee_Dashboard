@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type TraceDto } from "@/lib/api";
+import { type TraceDto, interactionCost } from "@/lib/api";
 import {
   formatCost,
   formatTokens,
@@ -58,8 +58,10 @@ export default function TraceTable({
             <TableHead className="text-right text-zinc-400">Tokens</TableHead>
             <TableHead className="text-right text-zinc-400">Cost</TableHead>
             <TableHead className="text-right text-zinc-400">Latency</TableHead>
+            <TableHead className="text-zinc-400">Session</TableHead>
             <TableHead className="text-zinc-400">User</TableHead>
             <TableHead className="text-center text-zinc-400">Status</TableHead>
+            <TableHead className="text-center text-zinc-400">Capture</TableHead>
             <TableHead className="text-center text-zinc-400">
               Savings
             </TableHead>
@@ -69,7 +71,7 @@ export default function TraceTable({
           {isLoading
             ? Array.from({ length: 10 }).map((_, i) => (
                 <TableRow key={i} className="border-zinc-800/50">
-                  {Array.from({ length: 8 }).map((_, j) => (
+                  {Array.from({ length: 10 }).map((_, j) => (
                     <TableCell key={j}>
                       <div className="h-4 w-full animate-pulse rounded bg-zinc-800" />
                     </TableCell>
@@ -113,10 +115,13 @@ export default function TraceTable({
                     <span>{formatTokens(trace.outputTokens)}</span>
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-zinc-200">
-                    {formatCost(trace.costUsd)}
+                    {formatCost(interactionCost(trace))}
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-zinc-300">
                     {formatLatency(trace.latencyMs)}
+                  </TableCell>
+                  <TableCell className="max-w-[120px] truncate font-mono text-xs text-zinc-400">
+                    {trace.sessionId ?? "—"}
                   </TableCell>
                   <TableCell className="text-zinc-300">
                     {trace.userId ?? (
@@ -140,6 +145,17 @@ export default function TraceTable({
                     </Tooltip>
                   </TableCell>
                   <TableCell className="text-center">
+                    <Badge
+                      className={
+                        trace.captureEnabled === false
+                          ? "bg-zinc-800 text-zinc-500"
+                          : "bg-emerald-500/15 text-emerald-400"
+                      }
+                    >
+                      {trace.captureEnabled === false ? "Off" : "On"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
                     {trace.wasCompressed ? (
                       <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/20 hover:bg-violet-500/30">
                         {Math.round(((trace.originalTokens - trace.inputTokens) / trace.originalTokens) * 100)}%
@@ -152,11 +168,18 @@ export default function TraceTable({
               ))}
           {!isLoading && traces.length === 0 && (
             <TableRow className="border-zinc-800/50">
-              <TableCell colSpan={8} className="py-12 text-center">
-                <p className="text-sm text-zinc-500">
-                  No traces found. Make your first request through the proxy to
-                  see data here.
+              <TableCell colSpan={10} className="py-16 text-center">
+                <p className="text-sm font-medium text-zinc-200">No AI interactions yet.</p>
+                <p className="mt-2 text-sm text-zinc-500">
+                  Connect your application to TokenBee and your first captured
+                  interaction will appear here.
                 </p>
+                <a
+                  href="/docs#quick-start"
+                  className="mt-4 inline-block text-sm font-medium text-violet-400 hover:text-violet-300"
+                >
+                  View integration guide
+                </a>
               </TableCell>
             </TableRow>
           )}

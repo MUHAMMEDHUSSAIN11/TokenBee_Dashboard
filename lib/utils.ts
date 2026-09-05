@@ -75,3 +75,36 @@ export function truncate(str: string, maxLength: number): string {
   if (str.length <= maxLength) return str;
   return str.slice(0, maxLength) + "…";
 }
+
+/** Local calendar day start as ISO string (inclusive). */
+export function startOfLocalDayIso(date = new Date()): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
+/** Local calendar day end exclusive as ISO string. */
+export function endOfLocalDayIso(date = new Date()): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 1);
+  return d.toISOString();
+}
+
+/** Parse yyyy-mm-dd as local calendar day. */
+export function localDateInputToStartIso(yyyyMmDd: string): string {
+  const [y, m, d] = yyyyMmDd.split("-").map(Number);
+  return startOfLocalDayIso(new Date(y, m - 1, d));
+}
+
+export function localDateInputToEndExclusiveIso(yyyyMmDd: string): string {
+  const [y, m, d] = yyyyMmDd.split("-").map(Number);
+  return endOfLocalDayIso(new Date(y, m - 1, d));
+}
+
+export function toDateInputValue(date = new Date()): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}

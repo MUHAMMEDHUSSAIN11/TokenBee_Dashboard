@@ -29,6 +29,7 @@ export default function DocsPage() {
 
           <div className="mb-2 mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Getting Started</div>
           <a href="#quick-start" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Quick Start</a>
+          <a href="#capture" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Capture</a>
           <a href="#authentication" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Authentication & BYOK</a>
           <a href="#models" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Supported Models</a>
           
@@ -42,7 +43,7 @@ export default function DocsPage() {
           <a href="#sessions" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Sessions & Replays</a>
           <a href="#observability" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Observability</a>
           <a href="#metadata" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Custom Metadata</a>
-          <a href="#privacy" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Data Privacy</a>
+          <a href="#capture-control" className="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900 transition-colors">Capture control</a>
         </nav>
 
         <div className="mt-auto pt-4 border-t border-zinc-200 dark:border-zinc-800">
@@ -57,12 +58,18 @@ export default function DocsPage() {
           {/* Header */}
           <div className="mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 text-xs font-bold uppercase tracking-widest mb-4">
-              Version 1.2.0
+              Version 2.0.1
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl">Engineering Documentation</h1>
+            <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl">Capture, audit, replay, optimize</h1>
             <p className="mt-4 text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed">
-              TokenBee is a stateless LLM proxy that adds a layer of intelligence between your apps and cloud LLM providers. 
-              Compress prompts, replay sessions, and observe production AI traffic — all through lightweight SDKs.
+              TokenBee is the AI interaction capture layer for teams shipping LLM features to production.
+              Requests still go to your LLM provider (BYOK). When capture is on, TokenBee retains a searchable
+              audit trail you can inspect in Interactions, open as a session timeline in Replay (when you send a
+              sessionId — timelines show what was recorded; they do not re-call the model), and review for cost
+              and compression in Optimization. Capture is on by default and can be turned off globally or per request.
+            </p>
+            <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-500">
+              TokenBee provides audit trail and governance tooling for your own AI interactions. It does not certify or guarantee legal or regulatory compliance.
             </p>
           </div>
 
@@ -74,8 +81,14 @@ export default function DocsPage() {
               </div>
               <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Quick Start</h2>
             </div>
-            <p className="mb-8 text-zinc-600 dark:text-zinc-400 leading-relaxed text-lg">
-              Install our SDK, initialize the client with your keys, and start sending requests. The SDK handles all header orchestration, provider routing, and compression configuration for you.
+            <ol className="mb-8 list-decimal space-y-2 pl-6 text-lg text-zinc-600 dark:text-zinc-400">
+              <li>Create an account and copy your TokenBee API key</li>
+              <li>Install the SDK</li>
+              <li>Send a request with your provider key (BYOK)</li>
+              <li>Open Interactions to see the captured exchange</li>
+            </ol>
+            <p className="mb-8 text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              The SDK handles routing, optional compression, and capture headers. Precedence for capture: per-request setting, then project setting, then default on.
             </p>
 
             {/* Step 1 - Install */}
@@ -103,7 +116,7 @@ export default function DocsPage() {
                   <span>Terminal</span>
                 </div>
                 <pre className="font-mono text-sm text-zinc-200 overflow-x-auto">
-                  <span className="text-zinc-500 select-none">$ </span>{activeTab === 'typescript' ? 'npm install @tokenbee/sdk@2.0.0' : 'pip install tokenbee-sdk==2.0.0'}
+                  <span className="text-zinc-500 select-none">$ </span>{activeTab === 'typescript' ? 'npm install @tokenbee/sdk@2.0.1' : 'pip install tokenbee-sdk==2.0.1'}
                 </pre>
               </div>
             </div>
@@ -211,6 +224,29 @@ export default function DocsPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </section>
+
+          <hr className="my-16 border-zinc-200 dark:border-zinc-800" />
+
+          <section id="capture" className="mb-20 scroll-mt-24">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
+                <Eye className="h-5 w-5" />
+              </div>
+              <h2 className="text-3xl font-bold">Interaction capture</h2>
+            </div>
+            <p className="mb-6 text-lg text-zinc-600 dark:text-zinc-400">
+              Capture is on by default. Requests always go through to the provider. When capture is off, TokenBee still records tokens, cost, latency, model, and status — but not message or response bodies.
+            </p>
+            <div className="space-y-4 text-zinc-600 dark:text-zinc-400">
+              <p><strong className="text-zinc-200">Project setting</strong> — Settings → AI Interaction Capture.</p>
+              <p><strong className="text-zinc-200">Per-request override</strong> — SDK <code className="font-mono text-sm">capture: false</code> or header <code className="font-mono text-sm">X-TokenBee-Capture: false</code>.</p>
+              <p><strong className="text-zinc-200">Precedence</strong> — per-request → project setting → default on. Plan limits never block the request; they only skip content retention after the monthly captured-interaction allowance.</p>
+              <p><strong className="text-zinc-200">Retention</strong> — Free 3 days, Pro 30 days, Team 90 days. Expired interactions are deleted by a daily cleanup job.</p>
+              <p><strong className="text-zinc-200">Replay</strong> — If a session ID was sent and content was captured, open the interaction and choose Replay. A replay is not guaranteed identical if model or provider state changed.</p>
+              <p><strong className="text-zinc-200">Compression</strong> is an optimization feature, not the product identity. Savings shown in the dashboard are estimates from TokenBee cost tables.</p>
+              <p>TokenBee is designed to support AI governance and audit workflows. It does not make your application legally compliant by itself.</p>
             </div>
           </section>
 
@@ -638,16 +674,16 @@ export default function DocsPage() {
 
           <hr className="my-16 border-zinc-200 dark:border-zinc-800" />
 
-          <section id="privacy" className="mb-20 scroll-mt-24">
+          <section id="capture-control" className="mb-20 scroll-mt-24">
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
                 <ShieldCheck className="h-5 w-5" />
               </div>
-              <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Absolute Control & Opt-Outs</h2>
+              <h2 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Capture control</h2>
             </div>
             <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
-              TokenBee enables powerful features like Payload Logging, Session Replays, and Compression by default — but you maintain absolute control over your traffic. 
-              <strong>You can disable these features entirely</strong> for specific endpoints, agents, or environments directly through the SDK.
+              You control whether TokenBee retains interaction content. Disable capture globally in Settings, or per request with <code className="font-mono text-sm">capture: false</code>.
+              Metadata (tokens, cost, latency) can still be recorded. TokenBee provides audit trail tooling — it does not make your product legally compliant by itself.
             </p>
 
             <div className="space-y-6">
@@ -659,8 +695,8 @@ export default function DocsPage() {
                     {"  "}model: TokenBeeModel.AnthropicClaudeSonnet4,{"\n"}
                     {"  "}input: {"{"}{"\n"}
                     {"    "}messages: [...],{"\n"}
-                    {"    "}<span className="text-zinc-500">{"// 1. Disable payload logging & replays completely"}</span>{"\n"}
-                    {"    "}<span className="text-red-400">privacy</span>: <span className="text-emerald-400">true</span>,{"\n"}
+                    {"    "}<span className="text-zinc-500">{"// 1. Do not retain message/response bodies"}</span>{"\n"}
+                    {"    "}<span className="text-red-400">capture</span>: <span className="text-emerald-400">false</span>,{"\n"}
                     {"    "}<span className="text-zinc-500">{"// 2. Disable semantic compression (bypass completely)"}</span>{"\n"}
                     {"    "}<span className="text-red-400">compression</span>: <span className="text-emerald-400">'off'</span>,{"\n"}
                     {"    "}<span className="text-zinc-500">{"// 3. Omitting 'sessionId' disables session grouping"}</span>{"\n"}
@@ -674,12 +710,12 @@ export default function DocsPage() {
                 <div className="flex gap-4">
                   <ShieldCheck className="h-6 w-6 text-red-500 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-red-600 dark:text-red-400 mb-1">What happens when features are disabled?</h4>
+                    <h4 className="font-bold text-red-600 dark:text-red-400 mb-1">What happens when capture is off?</h4>
                     <ul className="text-sm text-zinc-700 dark:text-zinc-300 space-y-2 leading-relaxed">
-                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> Request and Response payloads are never recorded</li>
-                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> Semantic Compression Engine is bypassed directly to the provider</li>
-                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> Basic Observability (Model, Latency, API failures) still works</li>
-                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> Backend syncs latest provider pricing to calculate USD costs accurately automatically</li>
+                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> Request and response bodies are not stored</li>
+                      <li className="flex gap-2"><span className="text-red-500 shrink-0">✕</span> Session replay spans are not recorded for that interaction</li>
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> The request still reaches the LLM provider</li>
+                      <li className="flex gap-2"><span className="text-emerald-500 shrink-0">✓</span> Metadata (model, latency, tokens, cost, status) can still be recorded</li>
                     </ul>
                   </div>
                 </div>

@@ -1,699 +1,620 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { BarChart2, Zap, Play, GitBranch, Menu, X, ChevronRight, Terminal, Box, Lock, Activity, Check } from "lucide-react";
+import {
+  Menu,
+  X,
+  ChevronRight,
+  Terminal,
+  List,
+  Play,
+  Sparkles,
+  Shield,
+  GitBranch,
+  ArrowRight,
+  Zap,
+} from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
-function ScrollFade({
+function PanelChrome({
+  title,
   children,
-  delay = 0,
-  className = "",
 }: {
+  title: string;
   children: React.ReactNode;
-  delay?: number;
-  className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div
-      ref={ref}
-      className={`transition-all duration-700 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-        } ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
+    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-zinc-950">
+      <div className="flex items-center gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-white/10">
+        <span className="flex gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+          <span className="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+          <span className="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+        </span>
+        <span className="ml-2 font-mono text-[11px] text-zinc-500">{title}</span>
+      </div>
+      <div className="p-4">{children}</div>
     </div>
+  );
+}
+
+function InteractionsPanel() {
+  return (
+    <PanelChrome title="Interactions">
+      <div className="space-y-2 font-mono text-[11px]">
+        <div className="grid grid-cols-[1fr_1.2fr_0.7fr_0.6fr] gap-2 text-zinc-500">
+          <span>Time</span>
+          <span>Model</span>
+          <span>Tokens</span>
+          <span>Status</span>
+        </div>
+        {[
+          ["12:41:08", "gpt-4o-mini", "in / out", "ok"],
+          ["12:40:22", "claude-sonnet", "in / out", "ok"],
+          ["12:38:55", "gemini-flash", "in / out", "err"],
+        ].map(([t, m, tok, s]) => (
+          <div
+            key={t}
+            className="grid grid-cols-[1fr_1.2fr_0.7fr_0.6fr] gap-2 rounded-lg bg-white px-2 py-2 text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+          >
+            <span className="text-zinc-500">{t}</span>
+            <span className="truncate">{m}</span>
+            <span className="text-zinc-500">{tok}</span>
+            <span className={s === "ok" ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}>
+              {s}
+            </span>
+          </div>
+        ))}
+        <p className="pt-1 text-[10px] text-zinc-400">Schematic — your live data appears after capture</p>
+      </div>
+    </PanelChrome>
+  );
+}
+
+function ReplayPanel() {
+  const steps = [
+    { label: "User message", detail: "What was asked" },
+    { label: "Model", detail: "Provider + model id" },
+    { label: "Tool call", detail: "If present in the request" },
+    { label: "Assistant", detail: "What was returned" },
+  ];
+  return (
+    <PanelChrome title="Replay · session timeline">
+      <ol className="space-y-3">
+        {steps.map((step, i) => (
+          <li key={step.label} className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full border border-zinc-300 text-[10px] font-mono text-zinc-500 dark:border-zinc-600">
+                {i + 1}
+              </span>
+              {i < steps.length - 1 && (
+                <span className="mt-1 h-full w-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+              )}
+            </div>
+            <div className="pb-2">
+              <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{step.label}</p>
+              <p className="text-xs text-zinc-500">{step.detail}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-2 text-[10px] text-zinc-400">Shows recorded history — does not re-call the model</p>
+    </PanelChrome>
+  );
+}
+
+function OptimizationPanel() {
+  return (
+    <PanelChrome title="Optimization · compression">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex-1 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500">Before</p>
+          <p className="mt-1 text-sm font-medium">Full context</p>
+          <p className="text-xs text-zinc-500">original input tokens</p>
+        </div>
+        <ArrowRight className="mx-auto h-4 w-4 shrink-0 text-zinc-400 sm:mx-0" />
+        <div className="flex-1 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500">After</p>
+          <p className="mt-1 text-sm font-medium">Compressed input</p>
+          <p className="text-xs text-zinc-500">sent to provider</p>
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <span className="rounded-md border border-zinc-200 px-2 py-0.5 font-mono text-[10px] text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
+          Smart · query-aware
+        </span>
+        <span className="rounded-md border border-zinc-200 px-2 py-0.5 font-mono text-[10px] text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
+          Hive · general context
+        </span>
+        <span className="rounded-md border border-zinc-200 px-2 py-0.5 font-mono text-[10px] text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
+          rate · on/off
+        </span>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-zinc-500">
+        Spend and savings come from your account&apos;s traces — not demo numbers.
+      </p>
+    </PanelChrome>
+  );
+}
+
+function CapturePanel() {
+  return (
+    <PanelChrome title="Settings · Capture">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white px-3 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <div>
+            <p className="text-sm font-medium">Capture interactions</p>
+            <p className="text-xs text-zinc-500">On by default</p>
+          </div>
+          <span className="relative h-6 w-11 rounded-full bg-zinc-900 dark:bg-emerald-500">
+            <span className="absolute right-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow" />
+          </span>
+        </div>
+        <div>
+          <p className="mb-2 text-xs text-zinc-500">Retention (plan limits apply)</p>
+          <div className="flex flex-wrap gap-2">
+            {["3 days", "30 days", "90 days"].map((d) => (
+              <span
+                key={d}
+                className="rounded-md border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600 dark:border-zinc-700 dark:text-zinc-300"
+              >
+                {d}
+              </span>
+            ))}
+          </div>
+        </div>
+        <p className="font-mono text-[11px] text-zinc-500">
+          SDK: capture: false · Header: X-TokenBee-Capture
+        </p>
+      </div>
+    </PanelChrome>
   );
 }
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"typescript" | "python" | "http">("typescript");
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-zinc-900 dark:text-zinc-50 font-sans selection:bg-violet-500/30">
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        .fade-up {
-          opacity: 0;
-          transform: translateY(20px);
-          animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes fadeUp {
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .delay-0 { animation-delay: 0ms; }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        
-        .glow-bg {
-          position: absolute;
-          width: 600px;
-          height: 600px;
-          background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(0,0,0,0) 70%);
-          top: -200px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 0;
-          pointer-events: none;
-        }
-      ` }} />
-
-      {/* SECTION 1 - Navigation */}
-      <nav className="fixed top-0 z-50 w-full border-b border-zinc-200 dark:border-white/[0.05] bg-white/80 dark:bg-black/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
-          <div className="flex items-center">
-            <Link href="/" className="relative flex items-center">
-              <img 
-                src="/logo-dark.svg" 
-                alt="TokenBee" 
-                className="h-8.5 w-auto opacity-0 dark:opacity-100" 
-              />
-              <img 
-                src="/logo-light.svg" 
-                alt="TokenBee" 
-                className="absolute left-0 top-0 h-8.5 w-auto opacity-100 dark:opacity-0" 
-              />
-            </Link>
-          </div>
+    <div className="min-h-screen bg-white font-sans text-zinc-900 antialiased selection:bg-zinc-900/10 dark:bg-black dark:text-zinc-50 dark:selection:bg-white/20">
+      <nav className="fixed top-0 z-50 w-full border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl dark:border-white/[0.06] dark:bg-black/80">
+        <div className="mx-auto flex h-16 max-w-[1100px] items-center justify-between px-6">
+          <Link href="/" className="relative flex items-center">
+            <img src="/logo-dark.svg" alt="TokenBee" className="h-8 w-auto opacity-0 dark:opacity-100" />
+            <img src="/logo-light.svg" alt="TokenBee" className="absolute left-0 top-0 h-8 w-auto opacity-100 dark:opacity-0" />
+          </Link>
 
           <div className="hidden items-center gap-8 md:flex">
-            <Link href="#features" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
-              Features
+            <Link href="#product" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">
+              Product
             </Link>
-            <Link href="#pricing" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
+            <Link href="#compression" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">
+              Compression
+            </Link>
+            <Link href="#pricing" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">
               Pricing
             </Link>
-            <Link href="/docs" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
+            <Link href="/docs" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white">
               Docs
             </Link>
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link href="https://github.com/tokenBee/gateway" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">
+            <Link href="https://github.com/tokenBee/gateway" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
               <GitBranch className="h-5 w-5" />
             </Link>
             <ThemeToggle />
-            <Link href="/login?mode=signup" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
+            <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white">
               Sign in
+            </Link>
+            <Link
+              href="/login?mode=signup"
+              className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-black"
+            >
+              Start free
             </Link>
           </div>
 
-          <div className="flex items-center gap-3 md:hidden">
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="text-zinc-600 dark:text-zinc-400 md:hidden"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 top-[64px] z-40 bg-white dark:bg-black px-6 py-8 md:hidden">
-          <div className="flex flex-col space-y-6">
-            <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Features</Link>
-            <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Pricing</Link>
-            <Link href="/docs" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Docs</Link>
-            <hr className="border-zinc-100 dark:border-white/10" />
-            <Link href="/login?mode=signup" className="text-lg font-medium text-zinc-700 dark:text-zinc-300">Sign in</Link>
+        <div className="fixed inset-0 top-16 z-40 bg-white px-6 py-8 dark:bg-black md:hidden">
+          <div className="flex flex-col space-y-5">
+            <Link href="#product" onClick={() => setMobileMenuOpen(false)}>Product</Link>
+            <Link href="#compression" onClick={() => setMobileMenuOpen(false)}>Compression</Link>
+            <Link href="#pricing" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
+            <Link href="/docs" onClick={() => setMobileMenuOpen(false)}>Docs</Link>
+            <hr className="border-zinc-200 dark:border-white/10" />
+            <Link href="/login">Sign in</Link>
+            <Link href="/login?mode=signup" className="font-semibold">Start free</Link>
           </div>
         </div>
       )}
 
-      <main className="relative pt-32 pb-20">
-        <div className="glow-bg" />
-
-        {/* SECTION 2 - Hero */}
-        <section className="relative z-10 mx-auto max-w-[1200px] px-6 text-center">
-          <div className="fade-up delay-0 mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-white/10 bg-zinc-100/50 dark:bg-white/5 px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 backdrop-blur-md">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            Observability, Replays & Compression for App Builders
+      <main className="pt-28 pb-20">
+        {/* Hero */}
+        <section className="relative mx-auto max-w-[1100px] overflow-hidden px-6">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10 opacity-[0.35] dark:opacity-20"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgb(24 24 27 / 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgb(24 24 27 / 0.06) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+              maskImage: "radial-gradient(ellipse at center, black 20%, transparent 70%)",
+            }}
+          />
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="mb-6 text-sm font-medium tracking-wide text-zinc-500">
+              For AI teams shipping LLM features to production
+            </p>
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl sm:leading-[1.08]">
+              Your AI said it.
+              <br />
+              TokenBee remembers it.
+            </h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+              Capture every AI interaction, inspect what happened, open session timelines, and reduce context with semantic compression — then see cost impact from your own traffic. Capture stays configurable globally or per request.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/login?mode=signup"
+                className="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-7 py-3.5 text-sm font-bold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+              >
+                Start free
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/docs"
+                className="inline-flex items-center gap-2 rounded-full border border-zinc-200 px-7 py-3.5 text-sm font-medium transition hover:bg-zinc-50 dark:border-white/15 dark:hover:bg-white/5"
+              >
+                Read the docs
+              </Link>
+            </div>
           </div>
 
-          <h1 className="fade-up delay-100 text-6xl font-extrabold tracking-tight sm:text-8xl lg:text-[5.5rem] leading-[1.1]">
-            Observe, Replay and<br />
-            <span className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 dark:from-violet-400 dark:via-fuchsia-400 dark:to-indigo-400 bg-clip-text text-transparent">
-              Compress LLM traffic.
-            </span>
-          </h1>
-
-          <p className="fade-up delay-200 mx-auto mt-8 max-w-2xl text-xl text-zinc-400 leading-relaxed">
-            TokenBee sits between your RAG applications and your LLM providers. Get high-fidelity query-aware compression, session replays, and complete observability with our unified SDKs.
-          </p>
-
-          <div className="fade-up delay-300 mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/login?mode=signup"
-              className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-zinc-900 px-8 py-4 text-base font-bold text-white transition-all hover:scale-[1.02] active:scale-95 sm:w-auto shadow-xl dark:bg-white dark:text-black dark:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
-            >
-              <span>Get started for free</span>
-              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
-              href="/docs"
-              className="flex w-full items-center justify-center gap-2 rounded-full border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/5 px-8 py-4 text-base font-medium text-zinc-900 dark:text-white backdrop-blur-md transition-colors hover:bg-zinc-50 dark:hover:bg-white/10 sm:w-auto"
-            >
-              <Terminal className="h-4 w-4" />
-              Read the docs
-            </Link>
+          <div className="mx-auto mt-14 max-w-3xl overflow-hidden rounded-2xl border border-zinc-200 bg-[#0a0a0a] shadow-2xl shadow-zinc-900/10 dark:border-white/10">
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Terminal className="h-4 w-4 text-zinc-500" />
+                <span className="text-xs font-medium text-zinc-500">sdk · capture + compression</span>
+              </div>
+              <span className="rounded-full bg-white/5 px-2 py-0.5 font-mono text-[10px] text-zinc-500">
+                TypeScript
+              </span>
+            </div>
+            <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-zinc-300 sm:text-sm">
+{`const res = await client.send({
+  model: TokenBeeModel.OpenAIGPT4o,
+  input: {
+    messages: [...],
+    compression: 'auto',   // semantic compression (default)
+    rate: CompressionRate.Medium,
+    strategy: CompressionStrategy.Smart,
+    capture: true,         // retain interaction content
+  }
+});`}
+            </pre>
           </div>
         </section>
 
-        {/* SECTION 3 - How it works (SDK Examples) */}
-        <section id="builders" className="relative z-10 mx-auto mt-32 max-w-[1200px] px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-violet-400">App or Agent</h2>
-            <p className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">One gateway, many providers.</p>
-            <p className="mx-auto mt-6 max-w-2xl text-xl text-zinc-400">
-              Your application sends requests to TokenBee, where we can compress your prompts and reduce token usage automatically, then forward them to the LLM provider of your choice.
+        {/* Problem */}
+        <section className="mx-auto mt-28 max-w-[720px] px-6 text-center">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Production AI needs a memory — not another log dump.
+          </h2>
+          <p className="mt-4 text-zinc-600 dark:text-zinc-400">
+            When something goes wrong, teams need to know what the user asked, what the model saw, what it answered, which provider handled it, and what it cost. TokenBee keeps that history searchable — when you choose to capture it.
+          </p>
+        </section>
+
+        {/* Product bento */}
+        <section id="product" className="mx-auto mt-24 max-w-[1100px] scroll-mt-24 px-6">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-sm font-medium tracking-wide text-zinc-500">Product</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight">
+              Capture, inspect, compress, optimize — one layer.
+            </h2>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <article id="interactions" className="scroll-mt-24 space-y-5 rounded-3xl border border-zinc-200 p-6 dark:border-white/10 sm:p-8">
+              <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                <List className="h-4 w-4 text-zinc-500" />
+                Interactions
+              </div>
+              <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                Route through TokenBee to OpenAI, Anthropic, Gemini, and others. Capture is on by default; turn it off in Settings or per request with{" "}
+                <code className="rounded bg-zinc-100 px-1 font-mono text-[12px] dark:bg-zinc-800">capture: false</code>.
+                Requests still reach the LLM — bodies are simply not retained.
+              </p>
+              <InteractionsPanel />
+            </article>
+
+            <article id="replay" className="scroll-mt-24 space-y-5 rounded-3xl border border-zinc-200 p-6 dark:border-white/10 sm:p-8">
+              <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                <Play className="h-4 w-4 text-zinc-500" />
+                Replay
+              </div>
+              <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                Send a <code className="rounded bg-zinc-100 px-1 font-mono text-[12px] dark:bg-zinc-800">sessionId</code> to group interactions into a timeline.
+                Replay shows what was recorded — it does not re-call the LLM.
+              </p>
+              <ReplayPanel />
+            </article>
+
+            <article id="optimization" className="scroll-mt-24 space-y-5 rounded-3xl border border-zinc-200 p-6 dark:border-white/10 sm:p-8">
+              <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                <Sparkles className="h-4 w-4 text-zinc-500" />
+                Optimization
+              </div>
+              <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                Semantic compression shrinks input context before the provider call. Overview and Optimization then show spend, tokens, and compression impact from your account&apos;s traces — not simulated demos.
+              </p>
+              <OptimizationPanel />
+            </article>
+
+            <article id="settings" className="scroll-mt-24 space-y-5 rounded-3xl border border-zinc-200 p-6 dark:border-white/10 sm:p-8">
+              <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                <Shield className="h-4 w-4 text-zinc-500" />
+                Capture control
+              </div>
+              <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                Turn capture on or off, set retention within your plan, and control whether messages are stored.
+                Control and visibility for your traffic — not a legal certification.
+              </p>
+              <CapturePanel />
+            </article>
+          </div>
+        </section>
+
+        {/* Compression highlight */}
+        <section id="compression" className="mx-auto mt-24 max-w-[1100px] scroll-mt-24 px-6">
+          <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-zinc-950">
+            <div className="grid lg:grid-cols-2">
+              <div className="space-y-5 p-8 sm:p-10">
+                <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                  <Zap className="h-3.5 w-3.5" />
+                  Optimization capability
+                </div>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  Semantic compression, on the path to your provider.
+                </h2>
+                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  TokenBee can compress prompts before they reach OpenAI, Anthropic, Gemini, and other providers.
+                  Choose strategy and rate per request — or turn compression off when you need the full context untouched.
+                  Captured interactions record original vs compressed tokens so you can see the impact in Optimization.
+                </p>
+                <ul className="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  <li className="flex gap-3">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-900 dark:bg-zinc-100" />
+                    <span>
+                      <strong className="text-zinc-900 dark:text-zinc-100">Smart</strong> — query-aware compression that keeps what matters for the current turn
+                    </span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-900 dark:bg-zinc-100" />
+                    <span>
+                      <strong className="text-zinc-900 dark:text-zinc-100">Hive</strong> — general-purpose compression for documents and long system context
+                    </span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-900 dark:bg-zinc-100" />
+                    <span>
+                      <strong className="text-zinc-900 dark:text-zinc-100">Per-request control</strong> —{" "}
+                      <code className="rounded bg-zinc-200/80 px-1 font-mono text-[12px] dark:bg-zinc-800">compression: &apos;auto&apos; | &apos;off&apos;</code>
+                      {" "}and rate / strategy in the SDK
+                    </span>
+                  </li>
+                </ul>
+                <Link
+                  href="/docs#compression"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 hover:underline dark:text-zinc-100"
+                >
+                  Compression docs
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="border-t border-zinc-200 p-8 dark:border-white/10 lg:border-l lg:border-t-0 sm:p-10">
+                <PanelChrome title="request · compression headers">
+                  <pre className="overflow-x-auto font-mono text-[12px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+{`compression: 'auto'
+rate:       CompressionRate.Medium
+strategy:   CompressionStrategy.Smart
+context:    TokenBeeContext.Auto
+
+// Bypass when needed:
+compression: 'off'`}
+                  </pre>
+                </PanelChrome>
+                <p className="mt-4 text-xs text-zinc-500">
+                  Compression is an optimization feature — capture, audit, and replay remain the core product.
+                  Savings shown in the dashboard are estimates from recorded traces.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Architecture */}
+        <section className="mx-auto mt-24 max-w-[720px] px-6">
+          <div className="rounded-2xl border border-zinc-200 px-6 py-8 text-center dark:border-white/10">
+            <p className="font-mono text-sm text-zinc-700 dark:text-zinc-300">
+              Your AI app
+              <span className="mx-2 text-zinc-400">→</span>
+              TokenBee
+              <span className="mx-2 text-zinc-400">→</span>
+              OpenAI / Anthropic / Gemini / …
+            </p>
+            <p className="mt-3 text-sm text-zinc-500">
+              BYOK — your provider key is forwarded with the request and is not stored by TokenBee.
+            </p>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="mx-auto mt-28 max-w-[800px] scroll-mt-24 px-6">
+          <h2 className="text-center text-3xl font-bold tracking-tight">
+            Why not just log this yourself?
+          </h2>
+          <div className="mt-10 divide-y divide-zinc-200 dark:divide-white/10">
+            {[
+              [
+                "Multi-provider traffic in one place",
+                "TokenBee normalizes requests across providers behind one SDK and API shape, so you are not maintaining separate logging pipelines per vendor.",
+              ],
+              [
+                "Interaction explorer and session timelines",
+                "Captured interactions land in a searchable explorer. With a session ID, you get a timeline of what was recorded — without building that UI yourself. Timelines show captured data; they do not re-run the model.",
+              ],
+              [
+                "Cost and savings from real traces",
+                "Optional semantic compression reduces context on the way to the provider. Spend, tokens, and compression impact are tracked from your account’s traffic — instead of a spreadsheet that drifts.",
+              ],
+              [
+                "Capture you can turn off",
+                "Global Settings and per-request capture: false skip body storage while the proxy still works.",
+              ],
+            ].map(([title, body]) => (
+              <div key={title} className="py-6">
+                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">{title}</h3>
+                <p className="mt-2 text-zinc-600 dark:text-zinc-400">{body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section id="pricing" className="mx-auto mt-28 max-w-[1100px] scroll-mt-24 px-6">
+          <div className="mb-10 text-center">
+            <p className="text-sm font-medium tracking-wide text-zinc-500">
+              Priced by captured AI interactions
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Pricing</h2>
+            <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+              Plans scale by how many interactions you capture each month — not by seats.
             </p>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
-            {/* Left side: Context */}
-            <div className="space-y-8">
-              <ul className="space-y-6 text-lg text-zinc-400">
-                <li className="flex gap-4">
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-violet-400">
-                    <Zap className="h-3 w-3" />
-                  </div>
-                  <span>Normalize responses across models so you can switch providers easily</span>
-                </li>
-                <li className="flex gap-4">
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-violet-400">
-                    <Activity className="h-3 w-3" />
-                  </div>
-                  <span>Observe and debug production AI traffic end-to-end</span>
-                </li>
-                <li className="flex gap-4">
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-violet-400">
-                    <GitBranch className="h-3 w-3" />
-                  </div>
-                  <span>Control costs with query-aware token compression and caching</span>
-                </li>
-              </ul>
-
-              <div className="pt-4 border-t border-zinc-200 dark:border-white/10">
-                <h4 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4 uppercase tracking-wider">Supported Providers</h4>
-                <div className="flex flex-wrap gap-3">
-                  <div className="rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300">OpenAI</div>
-                  <div className="rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300">Anthropic</div>
-                  <div className="rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300">Gemini</div>
-                  <div className="rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300">xAI</div>
-                  <div className="rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 px-4 py-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300">Mistral</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right side: Code */}
-            <div className="group relative rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-2xl overflow-hidden ring-1 ring-white/5 transition-all hover:ring-violet-500/20">
-              {/* Window Header */}
-              <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-5 py-4">
-                <div className="flex gap-2">
-                  <div className="h-3 w-3 rounded-full bg-[#ff5f56] shadow-[0_0_8px_rgba(255,95,86,0.3)]"></div>
-                  <div className="h-3 w-3 rounded-full bg-[#ffbd2e] shadow-[0_0_8px_rgba(255,189,46,0.3)]"></div>
-                  <div className="h-3 w-3 rounded-full bg-[#27c93f] shadow-[0_0_8px_rgba(39,201,63,0.3)]"></div>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full bg-black/40 p-1 border border-white/5">
-                  <button
-                    onClick={() => setActiveTab("typescript")}
-                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${activeTab === "typescript"
-                        ? "bg-violet-500 text-white shadow-lg shadow-violet-500/20"
-                        : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                      }`}
-                  >
-                    TypeScript
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("python")}
-                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${activeTab === "python"
-                        ? "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20"
-                        : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                      }`}
-                  >
-                    Python
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("http")}
-                    className={`rounded-full px-4 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all ${activeTab === "http"
-                        ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
-                        : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                      }`}
-                  >
-                    cURL
-                  </button>
-                </div>
-              </div>
-
-              {/* Window Content */}
-              <div className="p-7 font-mono text-[13px] sm:text-sm leading-relaxed overflow-x-auto min-h-[360px]">
-                <div className="mb-8 flex items-center justify-between gap-2 rounded-xl bg-white/[0.03] p-4 border border-white/5 group-hover:border-violet-500/20 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <Terminal className="h-4 w-4 text-violet-400" />
-                    <span className="text-zinc-500 select-none">$</span>
-                    <span className="text-zinc-200">
-                      {activeTab === "typescript" ? "npm install @tokenbee/sdk@2.0.0" :
-                        activeTab === "python" ? "pip install tokenbee-sdk==2.0.0" :
-                          "curl -X POST https://api.tokenbee.io/v1/..."}
-                    </span>
-                  </div>
-                  <div className="h-2 w-2 rounded-full bg-violet-500 animate-pulse"></div>
-                </div>
-
-                {activeTab === "typescript" && (
-                  <div className="text-zinc-300">
-                    <span className="text-fuchsia-400">import</span> {'{ TokenBee, TokenBeeModel, CompressionRate }'} <span className="text-fuchsia-400">from</span> <span className="text-emerald-400">'@tokenbee/sdk'</span>;<br/><br/>
-                    <span className="text-zinc-500">{'// Initialize with your TokenBee key + provider key (BYOK)'}</span><br/>
-                    <span className="text-fuchsia-400">const</span> bee = <span className="text-fuchsia-400">new</span> TokenBee({'{'}<br/>
-                    &nbsp;&nbsp;apiKey: <span className="text-emerald-400">'tb_live_...'</span>,<br/>
-                    &nbsp;&nbsp;llmKey: <span className="text-orange-400">'sk-your-provider-key'</span><br/>
-                    {'}'});<br/><br/>
-                    <span className="text-fuchsia-400">const</span> res = <span className="text-fuchsia-400">await</span> bee.send({'{'}<br/>
-                    &nbsp;&nbsp;model: TokenBeeModel.AnthropicClaudeSonnet4,<br/>
-                    &nbsp;&nbsp;input: {'{'}<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;messages: [{'{'} role: <span className="text-emerald-400">'user'</span>, content: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;strategy: CompressionStrategy.Smart,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;context: TokenBeeContext.Auto,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;rate: CompressionRate.High,<br/>
-                    &nbsp;&nbsp;{'}'}<br/>
-                    {'}'});<br/><br/>
-                    <span className="text-emerald-500">console</span>.log(res);
-                  </div>
-                )}
-                {activeTab === "python" && (
-                  <div className="text-zinc-300">
-                    <span className="text-fuchsia-400">from</span> tokenbee <span className="text-fuchsia-400">import</span> TokenBee, TokenBeeModel, CompressionRate<br/><br/>
-                    <span className="text-zinc-500">{'# Initialize with your keys (BYOK)'}</span><br/>
-                    bee = TokenBee(<br/>
-                    &nbsp;&nbsp;api_key=<span className="text-emerald-400">'tb_live_...'</span>,<br/>
-                    &nbsp;&nbsp;llm_key=<span className="text-orange-400">'sk-your-provider-key'</span><br/>
-                    )<br/><br/>
-                    res = bee.send(<br/>
-                    &nbsp;&nbsp;model=TokenBeeModel.ANTHROPIC_CLAUDE_SONNET_4,<br/>
-                    &nbsp;&nbsp;input={'{'}<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'messages'</span>: [{'{'} <span className="text-emerald-400">'role'</span>: <span className="text-emerald-400">'user'</span>, <span className="text-emerald-400">'content'</span>: <span className="text-emerald-400">'Explain token compression'</span> {'}'}],<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'strategy'</span>: CompressionStrategy.SMART,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'context'</span>: TokenBeeContext.AUTO,<br/>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-emerald-400">'rate'</span>: CompressionRate.MEDIUM<br/>
-                    &nbsp;&nbsp;{'}'}<br/>
-                    )<br/><br/>
-                    <span className="text-emerald-500">print</span>(res)
-                  </div>
-                )}
-                {activeTab === "http" && (
-                  <div className="text-zinc-300">
-                    curl -X POST https://api.tokenbee.io/v1/chat/completions \<br />
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"Authorization: Bearer tb_live_..."</span> \<br />
-                    &nbsp;&nbsp;-H <span className="text-orange-400">"X-LLM-Key: sk-your-provider-key"</span> \<br />
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Provider: mistral"</span> \<br />
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Model: mistral-large-latest"</span> \<br />
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Compression: auto"</span> \<br />
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Strategy: smart"</span> \<br />
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Context: auto"</span> \<br />
-                    &nbsp;&nbsp;-H <span className="text-emerald-400">"X-TokenBee-Rate: 0.33"</span> \<br />
-                    &nbsp;&nbsp;-d <span className="text-emerald-400">{`'{"messages": [{"role":"user", "content":"Explain..."}]}'`}</span>
-                  </div>
-                )}
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 4 - Stats */}
-        <section className="relative z-10 mx-auto mt-20 max-w-[1000px] border-y border-white/10 px-6 py-10 backdrop-blur-sm">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 divide-x divide-white/10">
-            <div className="flex flex-col items-center justify-center text-center">
-              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">~50%</span>
-              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">Token Savings</span>
-            </div>
-            <div className="flex flex-col items-center justify-center text-center">
-              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">~2ms</span>
-              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">Gateway Latency</span>
-            </div>
-            <div className="flex flex-col items-center justify-center text-center">
-              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">Unified</span>
-              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">SDK Experience</span>
-            </div>
-            <div className="flex flex-col items-center justify-center text-center">
-              <span className="text-4xl font-bold bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">BYOK</span>
-              <span className="mt-2 text-sm font-medium text-zinc-400 uppercase tracking-wider">Your Keys, Your Control</span>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 5 - Features */}
-        <section id="features" className="relative z-10 mx-auto mt-32 max-w-[1200px] px-6">
-          <div className="mb-20 text-center">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-violet-400">Why TokenBee?</h2>
-            <p className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Intelligence at the edge.</p>
+          <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-white/10">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-zinc-900">
+                <tr>
+                  <th className="px-5 py-4 font-semibold">Plan</th>
+                  <th className="px-5 py-4 font-semibold">Price</th>
+                  <th className="px-5 py-4 font-semibold">Captured / month</th>
+                  <th className="px-5 py-4 font-semibold">Retention</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 dark:divide-white/10">
+                <tr>
+                  <td className="px-5 py-4 font-medium">Free</td>
+                  <td className="px-5 py-4">$0</td>
+                  <td className="px-5 py-4">1,000</td>
+                  <td className="px-5 py-4">3 days</td>
+                </tr>
+                <tr>
+                  <td className="px-5 py-4 font-medium">Pro</td>
+                  <td className="px-5 py-4">$19/mo</td>
+                  <td className="px-5 py-4">25,000</td>
+                  <td className="px-5 py-4">30 days</td>
+                </tr>
+                <tr>
+                  <td className="px-5 py-4 font-medium">Team</td>
+                  <td className="px-5 py-4">$49/mo</td>
+                  <td className="px-5 py-4">100,000</td>
+                  <td className="px-5 py-4">90 days</td>
+                </tr>
+                <tr>
+                  <td className="px-5 py-4 font-medium">Enterprise</td>
+                  <td className="px-5 py-4">Custom</td>
+                  <td className="px-5 py-4">—</td>
+                  <td className="px-5 py-4">—</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            <ScrollFade delay={0} className="group relative rounded-3xl bg-zinc-50 dark:bg-zinc-900 p-8 border border-zinc-200 dark:border-white/10 hover:border-violet-500/50 transition-colors shadow-sm">
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent rounded-3xl opacity-0 transition-opacity group-hover:opacity-100"></div>
-              <div className="relative z-10">
-                <Box className="mb-6 h-8 w-8 text-violet-600 dark:text-violet-400" />
-                <h3 className="mb-4 text-2xl font-bold">Hive &amp; Smart</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-                  TokenBee features two proprietary semantic compression models optimized for different workloads.
-                </p>
-                <div className="space-y-3 mb-4">
-                  <div className="flex gap-2 text-sm">
-                    <div className="h-5 w-5 shrink-0 rounded-full bg-violet-500/10 flex items-center justify-center">
-                      <div className="h-1.5 w-1.5 rounded-full bg-violet-500"></div>
-                    </div>
-                    <span><strong className="text-zinc-800 dark:text-zinc-200">Hive:</strong> Context-agnostic compression for documents and system prompts.</span>
-                  </div>
-                  <div className="flex gap-2 text-sm">
-                    <div className="h-5 w-5 shrink-0 rounded-full bg-fuchsia-500/10 flex items-center justify-center">
-                      <div className="h-1.5 w-1.5 rounded-full bg-fuchsia-500"></div>
-                    </div>
-                    <span><strong className="text-zinc-800 dark:text-zinc-200">Smart:</strong> Query-specific RAG compression that preserves info relevant to user intent.</span>
-                  </div>
-                </div>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Unlike simple truncation, our models extract intent and compress surrounding context dynamically. Save up to 50% without losing reasoning quality.
-                </p>
-              </div>
-            </ScrollFade>
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+            Requests are never blocked — only new content storage pauses if you are over your plan&apos;s captured-interaction limit. Metadata such as tokens, cost, and latency can still be recorded.
+          </p>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            Enterprise: contact us for higher volume, longer retention, and custom terms.{" "}
+            <a href="mailto:sales@tokenbee.io" className="font-medium underline-offset-2 hover:underline">
+              Contact us
+            </a>
+          </p>
 
-            <ScrollFade delay={100} className="group relative rounded-3xl bg-zinc-50 dark:bg-zinc-900 p-8 border border-zinc-200 dark:border-white/10 hover:border-emerald-500/50 transition-colors shadow-sm">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-3xl opacity-0 transition-opacity group-hover:opacity-100"></div>
-              <div className="relative z-10">
-                <Play className="mb-6 h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-                <h3 className="mb-4 text-2xl font-bold">App Session Replays</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  RAG pipelines often fail silently. TokenBee records every step, prompt, and tool call. Play back any session frame-by-frame (opt-out anytime with strict privacy controls).
-                </p>
-              </div>
-            </ScrollFade>
-
-            <ScrollFade delay={200} className="group relative rounded-3xl bg-zinc-50 dark:bg-zinc-900 p-8 border border-zinc-200 dark:border-white/10 hover:border-blue-500/50 transition-colors shadow-sm">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-3xl opacity-0 transition-opacity group-hover:opacity-100"></div>
-              <div className="relative z-10">
-                <Lock className="mb-6 h-8 w-8 text-blue-600 dark:text-blue-400" />
-                <h3 className="mb-4 text-2xl font-bold">BYOK Architecture</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-                  Bring Your Own Key. Your provider API keys pass through the SDK and are forwarded directly to the LLM. TokenBee never stores them.
-                </p>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Maintain full control over your provider billing, rate limits, and security posture.
-                </p>
-              </div>
-            </ScrollFade>
-          </div>
-
-          <ScrollFade delay={300} className="mt-12">
-            <div className="p-8 rounded-3xl border border-violet-500/30 bg-violet-500/5 backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-violet-500 text-white shadow-lg shadow-violet-500/25">
-                  <Zap className="h-8 w-8 fill-white" />
-                </div>
-                <div className="text-center md:text-left">
-                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">Intelligent Context-Aware Compression</h3>
-                  <p className="mt-2 text-zinc-600 dark:text-zinc-400 text-lg">
-                    TokenBee now automatically detects if your payload is a <code className="text-violet-400 font-mono">conversation</code>, <code className="text-violet-400 font-mono">document</code>, or <code className="text-violet-400 font-mono">code</code>. We apply specialized semantic rules per-message to minimize context bloat while protecting reasoning precision.
-                  </p>
-                </div>
-                <div className="md:ml-auto shrink-0">
-                  <span className="px-4 py-2 rounded-full border border-violet-500/50 text-violet-600 dark:text-violet-400 font-bold text-sm uppercase tracking-widest whitespace-nowrap">
-                    Active
-                  </span>
-                </div>
-              </div>
-            </div>
-          </ScrollFade>
-        </section>
-
-        {/* SECTION 6 - Pricing */}
-        <section id="pricing" className="relative z-10 mx-auto mt-32 max-w-[1200px] px-6">
-          <div className="mb-16 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-widest mb-4">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-              </span>
-              Free while in Beta
-            </div>
-            <h2 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Simple, transparent pricing</h2>
-            <p className="mt-4 text-xl text-zinc-500 dark:text-zinc-400">Choose the plan that's right for your traffic. All paid features are currently unlocked for early adopters.</p>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Free */}
-            <div className="group rounded-3xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-8 shadow-sm flex flex-col h-full hover:border-emerald-500/50 transition-colors">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Free</h3>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-zinc-900 dark:text-white">$0</span>
-                <span className="text-zinc-500 text-xs font-medium uppercase tracking-wide">/ mo</span>
-              </div>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">Start optimizing your LLM costs</p>
-
-              <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">1M <span className="text-xs font-medium text-zinc-500">tokens/mo</span></div>
-
-              <ul className="mt-8 space-y-3 flex-1">
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  Automatic prompt compression
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  Multi-provider routing
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  Basic observability
-                </li>
-              </ul>
-
-              <Link href="/login?mode=signup" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
-                Current Plan
-              </Link>
-            </div>
-
-            {/* Starter */}
-            <div className="group rounded-3xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-8 shadow-sm flex flex-col h-full hover:border-blue-500/50 transition-colors">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Starter</h3>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-zinc-900 dark:text-white">$9</span>
-                <span className="text-zinc-500 text-xs font-medium uppercase tracking-wide">/ mo</span>
-              </div>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">For indie developers</p>
-
-              <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">20M <span className="text-xs font-medium text-zinc-500">tokens/mo</span></div>
-
-              <ul className="mt-8 space-y-3 flex-1">
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  Automatic compression (balanced)
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  Multi-provider support
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  30-day log retention
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  Cost & token savings insights
-                </li>
-              </ul>
-
-              <Link href="/login?mode=signup" className="mt-10 block w-full rounded-xl bg-zinc-900 dark:bg-white py-3 text-center text-sm font-bold text-white dark:text-black transition-transform hover:scale-[1.02]">
-                Claim Free Beta Access
-              </Link>
-            </div>
-
-            {/* Pro */}
-            <div className="relative rounded-3xl border border-purple-500/50 bg-white dark:bg-purple-950/10 p-8 shadow-xl flex flex-col h-full overflow-hidden hover:shadow-purple-500/10 transition-shadow">
-              <div className="absolute top-0 right-0 rounded-bl-xl bg-purple-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white flex items-center gap-1">
-                ⭐ Popular
-              </div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-2 w-2 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Pro</h3>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-zinc-900 dark:text-white">$29</span>
-                <span className="text-zinc-500 text-xs font-medium uppercase tracking-wide">/ mo</span>
-              </div>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">For growing apps</p>
-
-              <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">100M <span className="text-xs font-medium text-zinc-500">tokens/mo</span></div>
-
-              <ul className="mt-8 space-y-3 flex-1">
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  Advanced compression (aggressive)
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  Full observability dashboard
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  Priority support
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  Detailed savings analytics
-                </li>
-              </ul>
-
-              <Link href="/login?mode=signup" className="mt-10 block w-full rounded-xl bg-purple-600 py-3 text-center text-sm font-bold text-white transition-transform hover:scale-[1.02] shadow-lg shadow-purple-500/20">
-                Claim Free Beta Access
-              </Link>
-            </div>
-
-            {/* Scale */}
-            <div className="group rounded-3xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900 p-8 shadow-sm flex flex-col h-full hover:border-red-500/50 transition-colors">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Scale</h3>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-zinc-900 dark:text-white">Custom</span>
-              </div>
-              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 min-h-[40px]">Pay as you grow</p>
-
-              <div className="mt-6 font-bold text-xl text-zinc-900 dark:text-white">$0.20 <span className="text-xs font-medium text-zinc-500">/ 1M tokens</span></div>
-
-              <ul className="mt-8 space-y-3 flex-1">
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-red-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-red-600 dark:text-red-400" />
-                  </div>
-                  Unlimited usage
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-red-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-red-600 dark:text-red-400" />
-                  </div>
-                  Volume discounts
-                </li>
-                <li className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-300">
-                  <div className="mt-1 h-4 w-4 shrink-0 rounded-full bg-red-500/10 flex items-center justify-center">
-                    <Check className="h-2.5 w-2.5 text-red-600 dark:text-red-400" />
-                  </div>
-                  Dedicated support
-                </li>
-              </ul>
-
-              <Link href="mailto:sales@tokenbee.io" className="mt-10 block w-full rounded-xl border border-zinc-200 dark:border-white/20 bg-white dark:bg-transparent py-3 text-center text-sm font-bold text-zinc-900 dark:text-white transition-colors hover:bg-zinc-50 dark:hover:bg-white/5">
-                Contact sales
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 7 - CTA */}
-        <section className="relative z-10 mx-auto mt-32 max-w-[800px] text-center px-6">
-          <h2 className="text-4xl font-bold sm:text-6xl tracking-tight text-zinc-900 dark:text-white">Ready to ship faster?</h2>
-          <p className="mt-6 text-xl text-zinc-600 dark:text-zinc-400">Join developers saving money and debugging easier with TokenBee.</p>
-          <div className="mt-10">
+          <div className="mt-8 flex justify-center">
             <Link
               href="/login?mode=signup"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-900 dark:bg-white px-8 py-4 text-lg font-bold text-white dark:text-black transition-all hover:scale-[1.02] shadow-xl dark:shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+              className="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-7 py-3.5 text-sm font-bold text-white dark:bg-white dark:text-black"
             >
-              Start saving tokens now
-              <ChevronRight className="h-5 w-5" />
+              Start free
+              <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
+
+          <p className="mx-auto mt-10 max-w-2xl text-center text-xs leading-relaxed text-zinc-500">
+            TokenBee provides audit trail and governance tooling for your own AI interactions. It does not certify or guarantee legal or regulatory compliance.
+          </p>
+        </section>
+
+        <section className="mx-auto mt-28 max-w-[720px] px-6 text-center">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Give your AI application a memory.
+          </h2>
+          <p className="mt-4 text-zinc-600 dark:text-zinc-400">
+            Start free. Capture your first interaction from the dashboard.
+          </p>
+          <Link
+            href="/login?mode=signup"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-zinc-900 px-7 py-3.5 text-sm font-bold text-white dark:bg-white dark:text-black"
+          >
+            Start free
+            <ChevronRight className="h-4 w-4" />
+          </Link>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#050505] py-12 text-sm text-zinc-500">
-        <div className="mx-auto grid max-w-[1200px] gap-8 px-6 md:grid-cols-4">
+      <footer className="border-t border-zinc-200 py-12 text-sm text-zinc-500 dark:border-white/10">
+        <div className="mx-auto grid max-w-[1100px] gap-8 px-6 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="relative flex items-center mb-4">
-              <img 
-                src="/logo-dark.svg" 
-                alt="TokenBee" 
-                className="h-7 w-auto opacity-0 dark:opacity-100" 
-              />
-              <img 
-                src="/logo-light.svg" 
-                alt="TokenBee" 
-                className="absolute left-0 top-0 h-7 w-auto opacity-100 dark:opacity-0" 
-              />
+            <div className="relative mb-4 flex items-center">
+              <img src="/logo-dark.svg" alt="TokenBee" className="h-7 w-auto opacity-0 dark:opacity-100" />
+              <img src="/logo-light.svg" alt="TokenBee" className="absolute left-0 top-0 h-7 w-auto opacity-100 dark:opacity-0" />
             </div>
             <p className="max-w-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-              The intelligence layer for your LLM traffic. Compression, replays, and routing in one gateway.
+              AI interaction capture, audit, replay, and optimization for teams shipping LLM features to production.
             </p>
           </div>
           <div>
-            <h4 className="mb-4 font-bold text-white uppercase tracking-wider text-xs">Product</h4>
+            <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">Product</h4>
             <ul className="space-y-3">
-              <li><Link href="#builders" className="hover:text-white transition-colors">App Builders</Link></li>
-              <li><Link href="#features" className="hover:text-white transition-colors">Features</Link></li>
-              <li><Link href="#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-              <li><Link href="/docs" className="hover:text-white transition-colors">Documentation</Link></li>
+              <li><Link href="#product" className="hover:text-zinc-900 dark:hover:text-white">Product</Link></li>
+              <li><Link href="#compression" className="hover:text-zinc-900 dark:hover:text-white">Compression</Link></li>
+              <li><Link href="#pricing" className="hover:text-zinc-900 dark:hover:text-white">Pricing</Link></li>
+              <li><Link href="/docs" className="hover:text-zinc-900 dark:hover:text-white">Docs</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="mb-4 font-bold text-white uppercase tracking-wider text-xs">Legal</h4>
+            <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">Contact</h4>
             <ul className="space-y-3">
-              <li><Link href="mailto:founders@tokenbee.io" className="hover:text-white transition-colors">Contact</Link></li>
+              <li><a href="mailto:founders@tokenbee.io" className="hover:text-zinc-900 dark:hover:text-white">founders@tokenbee.io</a></li>
+              <li><a href="mailto:sales@tokenbee.io" className="hover:text-zinc-900 dark:hover:text-white">sales@tokenbee.io</a></li>
             </ul>
           </div>
         </div>
-        <div className="mx-auto mt-12 max-w-[1200px] border-t border-white/10 px-6 pt-8 text-center">
+        <div className="mx-auto mt-10 max-w-[1100px] border-t border-zinc-200 px-6 pt-8 text-center dark:border-white/10">
           © {new Date().getFullYear()} TokenBee Inc. All rights reserved.
         </div>
       </footer>

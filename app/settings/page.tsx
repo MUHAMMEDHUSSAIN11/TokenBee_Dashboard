@@ -13,8 +13,10 @@ import {
   revokeApiKey,
   createCheckoutSession,
   openBillingPortal,
+  getCaptureSettings,
+  updateCaptureSettings,
 } from "@/lib/api";
-import { Loader2, Copy, Trash2, KeyRound, CreditCard } from "lucide-react";
+import { Loader2, Copy, Trash2, KeyRound, CreditCard, Shield } from "lucide-react";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -51,6 +53,20 @@ export default function SettingsPage() {
     enabled: !!userId,
   });
 
+  const { data: captureSettings, isLoading: isLoadingCapture } = useQuery({
+    queryKey: ["captureSettings", userId],
+    queryFn: () => getCaptureSettings(userId!),
+    enabled: !!userId,
+  });
+
+  const updateCaptureMutation = useMutation({
+    mutationFn: (body: { captureEnabled?: boolean; retentionDays?: number; captureMessages?: boolean }) =>
+      updateCaptureSettings(userId!, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["captureSettings", userId] });
+    },
+  });
+
   const { data: apiKeys, isLoading: isLoadingKeys } = useQuery({
     queryKey: ["apiKeys", userId],
     queryFn: () => getApiKeys(userId!),
@@ -79,7 +95,7 @@ export default function SettingsPage() {
     if (!userId) return;
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const res = await createCheckoutSession(userId, user?.email || '', window.location.href);
+      const res = await createCheckoutSession(userId, user?.email || '', window.location.href, 'pro');
       window.location.href = res.url;
     } catch (e) {
       console.error(e);
@@ -101,13 +117,11 @@ export default function SettingsPage() {
     router.push("/login");
   };
 
-  const isLoading = !userId || isLoadingSub || isLoadingKeys;
+  const isLoading = !userId || isLoadingSub || isLoadingKeys || isLoadingCapture;
 
-  const freeTokenLimit = 1_000_000;
-  const tokensUsed = subStatus?.freeTokensUsed || 0;
   const freeUsedPct = Math.min(
     100,
-    (tokensUsed / freeTokenLimit) * 100
+    ((subStatus?.capturedInteractionsThisMonth ?? 0) / (subStatus?.capturedInteractionsLimit ?? 1000)) * 100
   );
 
   const formatTokenCount = (n: number) => {
@@ -148,15 +162,21 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <div className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-600 dark:text-zinc-300 capitalize">
-                    {subStatus?.status === 'free' ? 'Free Plan' : subStatus?.status === 'beta_premium' ? 'Beta Premium' : 'Pay As You Go'}
+                    {subStatus?.plan === 'team' || subStatus?.status === 'team'
+                      ? 'Team'
+                      : subStatus?.status === 'free'
+                        ? 'Free'
+                        : subStatus?.status === 'beta_premium'
+                          ? 'Beta Premium'
+                          : 'Pro'}
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-zinc-500 dark:text-zinc-400">Free tokens used</span>
+                    <span className="text-zinc-500 dark:text-zinc-400">Captured interactions this month</span>
                     <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                      {formatTokenCount(tokensUsed)} / {formatTokenCount(freeTokenLimit)}
+                      {(subStatus?.capturedInteractionsThisMonth ?? 0).toLocaleString()} / {(subStatus?.capturedInteractionsLimit ?? 1000).toLocaleString()}
                     </span>
                   </div>
                   
@@ -168,12 +188,23 @@ export default function SettingsPage() {
                   </div>
 
                   {subStatus?.status === "free" ? (
-                    <div className="pt-4">
+                    <div className="flex flex-wrap gap-3 pt-4">
                       <button
                         onClick={handleUpgrade}
-                        className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-900"
+                        className="inline-flex items-center justify-center rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
                       >
-                        Upgrade to pay as you go
+                        Upgrade to Pro — $19/month
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!userId) return;
+                          const { data: { user } } = await supabase.auth.getUser();
+                          const res = await createCheckoutSession(userId, user?.email || "", window.location.href, "team");
+                          window.location.href = res.url;
+                        }}
+                        className="inline-flex items-center justify-center rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                      >
+                        Team — $49/month
                       </button>
                     </div>
                   ) : (
@@ -189,6 +220,78 @@ export default function SettingsPage() {
                       </button>
                     </div>
                   )}
+                </div>
+              </section>
+
+              <section className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
+                <div className="mb-6">
+                  <h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    <Shield className="h-5 w-5 text-violet-500" />
+                    AI Interaction Capture
+                  </h2>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    {captureSettings?.captureEnabled
+                      ? "TokenBee will retain AI interactions for this account."
+                      : "Requests continue through TokenBee, but interaction content is not retained."}
+                  </p>
+                </div>
+                <div className="space-y-5">
+                  <label className="flex items-center justify-between">
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300">Capture interactions</span>
+                    <button
+                      type="button"
+                      disabled={updateCaptureMutation.isPending}
+                      onClick={() =>
+                        updateCaptureMutation.mutate({ captureEnabled: !captureSettings?.captureEnabled })
+                      }
+                      className={`relative h-6 w-11 rounded-full transition-colors ${
+                        captureSettings?.captureEnabled ? "bg-violet-600" : "bg-zinc-300 dark:bg-zinc-700"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+                          captureSettings?.captureEnabled ? "left-5" : "left-0.5"
+                        }`}
+                      />
+                    </button>
+                  </label>
+                  <label className="flex items-center justify-between">
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300">Store messages and responses</span>
+                    <input
+                      type="checkbox"
+                      checked={captureSettings?.captureMessages ?? true}
+                      onChange={(e) =>
+                        updateCaptureMutation.mutate({ captureMessages: e.target.checked })
+                      }
+                      className="h-4 w-4 accent-violet-600"
+                    />
+                  </label>
+                  <div>
+                    <p className="mb-2 text-sm text-zinc-700 dark:text-zinc-300">Retention</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(captureSettings?.allowedRetentionDays ?? [3]).map((days) => (
+                        <button
+                          key={days}
+                          type="button"
+                          onClick={() => updateCaptureMutation.mutate({ retentionDays: days })}
+                          className={`rounded-md border px-3 py-1.5 text-sm ${
+                            captureSettings?.retentionDays === days
+                              ? "border-violet-500 bg-violet-500/10 text-violet-600"
+                              : "border-zinc-200 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"
+                          }`}
+                        >
+                          {days} days
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-2 text-xs text-zinc-500">
+                      Longer retention is available on Pro (30 days) and Team (90 days).
+                    </p>
+                  </div>
+                  <p className="text-xs text-zinc-500">
+                    Per-request override: send <code className="font-mono">X-TokenBee-Capture: false</code> or SDK{" "}
+                    <code className="font-mono">capture: false</code>. Precedence is per-request, then this setting, then default on.
+                  </p>
                 </div>
               </section>
 

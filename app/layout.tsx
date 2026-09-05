@@ -9,19 +9,21 @@ import { ThemeProvider } from "@/components/theme-provider";
 import SessionTimeout from "@/components/auth/SessionTimeout";
 
 export const metadata: Metadata = {
-  title: 'TokenBee — Intelligent LLM Gateway & Semantic Compression',
-  description: 'Secure LLM observability, prompt compression, and frame-by-frame agent replays. Stateless BYOK architecture for production AI applications.',
+  title: 'TokenBee — Your AI said it. TokenBee remembers it.',
+  description: 'Capture, inspect, and optimize AI interactions for teams shipping LLM features to production. Searchable interaction history, session timelines, and cost visibility — priced by captured interactions.',
   keywords: [
-    'LLM gateway',
-    'BYOK architecture',
-    'prompt compression',
-    'semantic token reduction',
-    'agent replay',
-    'LLM observability'
+    'AI interaction logging',
+    'AI audit trail',
+    'AI observability',
+    'AI conversation logging',
+    'LLM audit logs',
+    'AI governance',
+    'AI request replay',
+    'LLM cost monitoring',
   ],
   openGraph: {
-    title: 'TokenBee — Observe, Replay and Compress LLM traffic.',
-    description: 'Stateless BYOK gateway for high-fidelity LLM observability and semantic compression.',
+    title: 'Your AI said it. TokenBee remembers it.',
+    description: 'Capture, inspect session timelines, and track cost and compression from your own AI traffic. Priced by captured interactions.',
     type: 'website',
   },
   icons: {

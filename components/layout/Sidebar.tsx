@@ -7,7 +7,7 @@ import {
   List,
   Play,
   Settings,
-  Telescope,
+  Sparkles,
   LogOut,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,8 +17,9 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
-  { label: "Traces", href: "/traces", icon: List },
+  { label: "Overview", href: "/dashboard", icon: BarChart3 },
+  { label: "Interactions", href: "/traces", icon: List },
+  { label: "Optimization", href: "/optimization", icon: Sparkles },
   { label: "Replay", href: "/replay", icon: Play },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
@@ -105,7 +106,7 @@ export default function Sidebar() {
                 <span className="truncate text-sm font-medium text-zinc-700 dark:text-zinc-200">
                   {userEmail}
                 </span>
-                <span className="text-xs text-zinc-500">Free Tier</span>
+                <span className="text-xs text-zinc-500">Account</span>
               </div>
             </div>
             <button

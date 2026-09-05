@@ -5,7 +5,9 @@ import { use } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import TraceDetail from "@/components/traces/TraceDetail";
+import { useEffect, useState } from "react";
 import { getTrace, type TraceDto } from "@/lib/api";
+import { createClient } from "@/lib/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,11 +18,20 @@ interface TracePageProps {
 
 export default function TraceDetailPage({ params }: TracePageProps) {
   const { id } = use(params);
+  const [accountId, setAccountId] = useState<string | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setAccountId(data.user.id);
+    });
+  }, [supabase]);
 
   const { data, isLoading, isError, refetch } = useQuery<TraceDto>({
-    queryKey: ["trace", id],
-    queryFn: () => getTrace(id),
-    staleTime: 5 * 60 * 1000, // 5 min — trace details don't change
+    queryKey: ["trace", id, accountId],
+    queryFn: () => getTrace(id, accountId || undefined),
+    enabled: !!accountId,
+    staleTime: 5 * 60 * 1000,
     refetchInterval: false,
   });
 
@@ -30,7 +41,7 @@ export default function TraceDetailPage({ params }: TracePageProps) {
 
       <div className="flex flex-1 flex-col overflow-hidden pl-60">
         <Header
-          title="Trace Details"
+          title="Interaction"
           subtitle={id}
         />
 

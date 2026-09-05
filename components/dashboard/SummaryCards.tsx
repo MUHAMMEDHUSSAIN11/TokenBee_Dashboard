@@ -51,41 +51,49 @@ export default function SummaryCards({ days, accountId }: SummaryCardsProps) {
   }
 
   const totalTokens = data.totalInputTokens + data.totalOutputTokens;
-  const errorRate =
-    data.totalRequests > 0
-      ? (data.errorRequests / data.totalRequests) * 100
+
+  const ratio =
+    data.totalInputTokens > 0 && data.totalOriginalTokens > 0
+      ? data.totalOriginalTokens / data.totalInputTokens
       : 0;
 
   const cards = [
     {
-      title: "Total Requests",
+      title: "AI interactions",
       value: data.totalRequests.toLocaleString(),
       subtext: `last ${days} days`,
       icon: Activity,
       color: "default" as const,
     },
     {
-      title: "Total Tokens",
-      value: formatTokens(totalTokens),
-      subtext: `${formatTokens(data.totalInputTokens)} in · ${formatTokens(data.totalOutputTokens)} out`,
-      icon: Coins,
-      color: "default" as const,
-    },
-    {
-      title: "Total Cost",
+      title: "AI spend",
       value: formatCost(data.totalCostUsd),
       subtext: `last ${days} days`,
       icon: DollarSign,
       color: "default" as const,
     },
     {
-      title: "Cost Saved",
+      title: "Estimated savings",
       value: formatCost(data.totalSavedUsd),
-      subtext: "via compression",
+      subtext: "from context optimization",
       icon: PiggyBank,
       color: (data.totalSavedUsd > 0 ? "green" : "default") as
         | "green"
         | "default",
+    },
+    {
+      title: "Tokens processed",
+      value: formatTokens(totalTokens),
+      subtext: `${formatTokens(data.totalInputTokens)} in · ${formatTokens(data.totalOutputTokens)} out`,
+      icon: Coins,
+      color: "default" as const,
+    },
+    {
+      title: "Average compression",
+      value: ratio > 1 ? `${ratio.toFixed(1)}x` : "—",
+      subtext: ratio > 1 ? "original / compressed input" : "no compression yet",
+      icon: PiggyBank,
+      color: "default" as const,
     },
     {
       title: "Avg Latency",
@@ -93,13 +101,6 @@ export default function SummaryCards({ days, accountId }: SummaryCardsProps) {
       subtext: `p95 ${formatLatency(data.p95LatencyMs)}`,
       icon: Clock,
       color: "default" as const,
-    },
-    {
-      title: "Error Rate",
-      value: `${errorRate.toFixed(1)}%`,
-      subtext: `${data.errorRequests} errors / ${data.totalRequests} requests`,
-      icon: AlertTriangle,
-      color: (errorRate > 5 ? "red" : "default") as "red" | "default",
     },
   ];
 

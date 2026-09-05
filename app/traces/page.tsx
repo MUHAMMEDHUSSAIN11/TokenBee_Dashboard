@@ -17,6 +17,9 @@ export default function TracesPage() {
   const [model, setModel] = useState("");
   const [onlyErrors, setOnlyErrors] = useState(false);
   const [onlyCompressed, setOnlyCompressed] = useState(false);
+  const [provider, setProvider] = useState("");
+  const [sessionId, setSessionId] = useState("");
+  const [q, setQ] = useState("");
   const [accountId, setAccountId] = useState<string | null>(null);
 
   const supabase = createClient();
@@ -50,13 +53,16 @@ export default function TracesPage() {
     setModel("");
     setOnlyErrors(false);
     setOnlyCompressed(false);
+    setProvider("");
+    setSessionId("");
+    setQ("");
     setOffset(0);
   };
 
   const tracesQuery = useQuery<TraceDto[]>({
     queryKey: [
       "traces",
-      { limit: PAGE_SIZE, offset, userId, model, onlyErrors, onlyCompressed, accountId },
+      { limit: PAGE_SIZE, offset, userId, model, onlyErrors, onlyCompressed, provider, sessionId, q, accountId },
     ],
     queryFn: () =>
       getTraces({
@@ -65,6 +71,9 @@ export default function TracesPage() {
         accountId: accountId || undefined,
         userId: userId || undefined,
         model: model || undefined,
+        provider: provider || undefined,
+        sessionId: sessionId || undefined,
+        q: q || undefined,
         onlyErrors: onlyErrors || undefined,
         onlyCompressed: onlyCompressed || undefined,
       }),
@@ -83,8 +92,8 @@ export default function TracesPage() {
 
       <div className="flex flex-1 flex-col overflow-hidden pl-60">
         <Header
-          title="Traces"
-          subtitle="Inspect every LLM request"
+          title="Interactions"
+          subtitle="Search and audit captured AI interactions"
         />
 
         <main className="flex-1 overflow-y-auto bg-zinc-950 p-6">
@@ -98,6 +107,12 @@ export default function TracesPage() {
               onToggleErrors={handleToggleErrors}
               onlyCompressed={onlyCompressed}
               onToggleCompressed={handleToggleCompressed}
+              provider={provider}
+              onProviderChange={(v) => { setProvider(v === "all" ? "" : v); resetPagination(); }}
+              sessionId={sessionId}
+              onSessionIdChange={(v) => { setSessionId(v); resetPagination(); }}
+              q={q}
+              onQChange={(v) => { setQ(v); resetPagination(); }}
               onClear={handleClear}
               models={modelsQuery.data ?? []}
             />

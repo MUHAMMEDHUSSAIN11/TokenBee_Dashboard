@@ -13,6 +13,7 @@ export interface SummaryDto {
   p95LatencyMs: number;
   errorRequests: number;
   compressedRequests: number;
+  compressionRate?: number;
 }
 
 export interface DailyDto {
@@ -53,12 +54,43 @@ export interface ApiKeyDto {
 
 export interface SubscriptionStatus {
   userId: string;
-  status: 'free' | 'paid' | 'past_due' | 'beta_premium';
+  status: 'free' | 'paid' | 'pro' | 'team' | 'past_due' | 'beta_premium';
+  plan?: 'free' | 'pro' | 'team' | 'past_due';
   tokensThisMonth: number;
   freeTokensUsed: number;
   isOverFreeLimit: boolean;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
+  capturedInteractionsThisMonth?: number;
+  capturedInteractionsLimit?: number;
+  maxRetentionDays?: number;
+  allowedRetentionDays?: number[];
+}
+
+export interface CaptureSettings {
+  userId: string;
+  captureEnabled: boolean;
+  retentionDays: number;
+  captureMessages: boolean;
+  maxRetentionDays: number;
+  allowedRetentionDays: number[];
+  plan: string;
+}
+
+export interface SavingsDto {
+  totalRequests: number;
+  originalInputTokens: number;
+  compressedInputTokens: number;
+  tokensAvoided: number;
+  estimatedSavingsUsd: number;
+  averageCompressionRatio: number;
+  opportunities: {
+    path: string;
+    reason: string;
+    tokensAvoided: number;
+    estimatedSavingsUsd: number;
+    requests: number;
+  }[];
 }
 
 export interface TraceDto {
@@ -83,6 +115,26 @@ export interface TraceDto {
   propertiesJson: string | null;
   compressionMetadataJson: string | null;
   errorMessage: string | null;
+  totalCostUsd?: number;
+  inputCostUsd?: number;
+  outputCostUsd?: number;
+  captureEnabled?: boolean;
+  expiresAt?: string | null;
+  savedCostUsd?: number;
+}
+
+export function interactionCost(trace: Pick<TraceDto, "costUsd" | "totalCostUsd">): number {
+  return trace.totalCostUsd ?? trace.costUsd ?? 0;
+}
+
+/** Estimated cost if input had not been compressed (actual + recorded savings). */
+export function costWithoutCompression(trace: TraceDto): number {
+  return interactionCost(trace) + (trace.savedCostUsd ?? 0);
+}
+
+export function tokensAvoided(trace: TraceDto): number {
+  if (!trace.originalTokens || trace.originalTokens <= trace.inputTokens) return 0;
+  return trace.originalTokens - trace.inputTokens;
 }
 
 export interface ChatCompletionRequest {
@@ -139,6 +191,8 @@ async function fetcher<T>(
 
 export function getSummary(params: {
   days?: number;
+  from?: string;
+  to?: string;
   accountId?: string;
   userId?: string;
   property?: string;
@@ -150,6 +204,8 @@ export function getSummary(params: {
 
 export function getDaily(params: {
   days?: number;
+  from?: string;
+  to?: string;
   accountId?: string;
   userId?: string;
 }): Promise<DailyDto[]> {
@@ -159,6 +215,8 @@ export function getDaily(params: {
 
 export function getByModel(params: {
   days?: number;
+  from?: string;
+  to?: string;
   accountId?: string;
   userId?: string;
 }): Promise<ModelDto[]> {
@@ -168,6 +226,8 @@ export function getByModel(params: {
 
 export function getByUser(params: {
   days?: number;
+  from?: string;
+  to?: string;
   limit?: number;
   accountId?: string;
 }): Promise<UserDto[]> {
@@ -181,6 +241,9 @@ export function getTraces(params: {
   accountId?: string;
   userId?: string;
   model?: string;
+  provider?: string;
+  sessionId?: string;
+  q?: string;
   onlyErrors?: boolean;
   onlyCompressed?: boolean;
 }): Promise<TraceDto[]> {
@@ -188,8 +251,39 @@ export function getTraces(params: {
   return fetcher<TraceDto[]>(`/api/dashboard/traces${query}`);
 }
 
-export function getTrace(id: string): Promise<TraceDto> {
-  return fetcher<TraceDto>(`/api/dashboard/traces/${encodeURIComponent(id)}`);
+export function getTrace(id: string, accountId?: string): Promise<TraceDto> {
+  const query = buildQuery({ accountId });
+  return fetcher<TraceDto>(`/api/dashboard/traces/${encodeURIComponent(id)}${query}`);
+}
+
+export function deleteTrace(id: string, accountId: string): Promise<{ deleted: boolean }> {
+  return fetcher<{ deleted: boolean }>(
+    `/api/dashboard/traces/${encodeURIComponent(id)}${buildQuery({ accountId })}`,
+    { method: "DELETE" }
+  );
+}
+
+export function getSavings(params: {
+  days?: number;
+  from?: string;
+  to?: string;
+  accountId?: string;
+}): Promise<SavingsDto> {
+  return fetcher<SavingsDto>(`/api/dashboard/savings${buildQuery(params)}`);
+}
+
+export function getCaptureSettings(userId: string): Promise<CaptureSettings> {
+  return fetcher<CaptureSettings>(`/api/auth/capture-settings/${encodeURIComponent(userId)}`);
+}
+
+export function updateCaptureSettings(
+  userId: string,
+  body: { captureEnabled?: boolean; retentionDays?: number; captureMessages?: boolean }
+): Promise<CaptureSettings> {
+  return fetcher<CaptureSettings>(`/api/auth/capture-settings/${encodeURIComponent(userId)}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
 }
 
 // ─── Settings API Functions ────────────────────────────────────
@@ -215,10 +309,15 @@ export function getSubscription(userId: string): Promise<SubscriptionStatus> {
   return fetcher<SubscriptionStatus>(`/api/auth/subscription/${encodeURIComponent(userId)}`);
 }
 
-export function createCheckoutSession(userId: string, email: string, returnUrl: string): Promise<{ url: string }> {
+export function createCheckoutSession(
+  userId: string,
+  email: string,
+  returnUrl: string,
+  plan?: "pro" | "team"
+): Promise<{ url: string }> {
   return fetcher<{ url: string }>('/api/auth/subscription/checkout', {
     method: 'POST',
-    body: JSON.stringify({ userId, email, returnUrl }),
+    body: JSON.stringify({ userId, email, returnUrl, plan }),
   });
 }
 

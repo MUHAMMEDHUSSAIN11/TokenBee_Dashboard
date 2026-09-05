@@ -53,8 +53,8 @@ export default function DashboardPage() {
 
       <div className="flex flex-1 flex-col overflow-hidden pl-60">
         <Header
-          title="Dashboard"
-          subtitle="LLM usage overview"
+          title="Overview"
+          subtitle="AI traffic, spend, capture, and optimization"
           days={days}
           onDaysChange={setDays}
           onRefresh={handleRefresh}
@@ -64,6 +64,10 @@ export default function DashboardPage() {
         <main className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-950 p-6 transition-colors">
           <div className="mx-auto max-w-7xl space-y-6">
             <QuotaWarning />
+
+            <p className="text-sm text-zinc-500">
+              Metrics below are from your account only. Empty values mean no captured traffic in this window.
+            </p>
 
             {/* Summary Cards — 3x2 grid */}
             <SummaryCards days={days} accountId={accountId} />

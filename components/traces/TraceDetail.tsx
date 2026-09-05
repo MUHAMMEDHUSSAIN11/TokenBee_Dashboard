@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { type TraceDto } from "@/lib/api";
+import { type TraceDto, interactionCost } from "@/lib/api";
 import { formatCost, formatLatency, formatDate, formatTokens } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -76,6 +76,87 @@ function JsonViewer({ content, label }: { content: string | null; label: string 
   );
 }
 
+function extractText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => (typeof part === "object" && part && "text" in part ? String(part.text) : ""))
+      .join("");
+  }
+  return "";
+}
+
+function InteractionTimeline({ trace }: { trace: TraceDto }) {
+  const source = trace.originalRequestBody || trace.requestBody;
+  const steps: { label: string; body?: string }[] = [];
+
+  if (trace.captureEnabled === false || !source) {
+    steps.push({
+      label: "Content not retained",
+      body: "This request was processed, but interaction content was not stored (capture off or plan limit).",
+    });
+  } else {
+    try {
+      const parsed = JSON.parse(source);
+      const messages = Array.isArray(parsed.messages) ? parsed.messages : [];
+      for (const msg of messages) {
+        const role = String(msg.role ?? "message");
+        steps.push({
+          label: role === "system" ? "System instructions" : role === "user" ? "User message" : role === "assistant" ? "Assistant" : role === "tool" ? "Tool result" : role,
+          body: extractText(msg.content) || (msg.tool_calls ? JSON.stringify(msg.tool_calls) : undefined),
+        });
+      }
+    } catch {
+      steps.push({ label: "Request", body: source.slice(0, 400) });
+    }
+    steps.push({ label: `Model · ${trace.model}`, body: trace.provider });
+    if (trace.responseBody) {
+      try {
+        const parsed = JSON.parse(trace.responseBody);
+        const content = parsed.choices?.[0]?.message?.content;
+        steps.push({ label: "Assistant", body: extractText(content) || trace.responseBody.slice(0, 400) });
+      } catch {
+        steps.push({ label: "Response", body: trace.responseBody.slice(0, 400) });
+      }
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-5">
+      <h3 className="mb-4 text-sm font-semibold text-zinc-200">Interaction timeline</h3>
+      <ol className="space-y-4">
+        {steps.map((step, i) => (
+          <li key={`${step.label}-${i}`} className="border-l border-zinc-700 pl-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">{step.label}</p>
+            {step.body && <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">{step.body}</p>}
+          </li>
+        ))}
+      </ol>
+      <div className="mt-6 grid grid-cols-3 gap-4 border-t border-zinc-800 pt-4 text-sm">
+        <div>
+          <p className="text-xs text-zinc-500">Tokens</p>
+          <p className="text-zinc-200">
+            In {formatTokens(trace.inputTokens)} · Out {formatTokens(trace.outputTokens)}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-zinc-500">Cost</p>
+          <p className="text-zinc-200">{formatCost(interactionCost(trace))}</p>
+        </div>
+        <div>
+          <p className="text-xs text-zinc-500">Latency</p>
+          <p className="text-zinc-200">{formatLatency(trace.latencyMs)}</p>
+        </div>
+      </div>
+      {trace.sessionId && (
+        <p className="mt-4 text-xs text-zinc-500">
+          Replay opens the original session timeline. A later replay can differ if the model or provider state changed.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function TraceDetail({ trace }: TraceDetailProps) {
   const router = useRouter();
 
@@ -111,7 +192,7 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
         className="text-zinc-400 hover:text-zinc-200"
       >
         <ArrowLeft className="mr-1.5 h-4 w-4" />
-        Back to Traces
+        Back to Interactions
       </Button>
 
       {/* Metadata & Actions Row */}
@@ -139,7 +220,7 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
           </span>
           <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
           <span className="text-sm tabular-nums text-zinc-200 font-medium">
-            {formatCost(trace.costUsd)}
+            {formatCost(interactionCost(trace))}
           </span>
           <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
           <span className="text-sm text-zinc-500">
@@ -147,17 +228,23 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
           </span>
         </div>
 
-        {trace.sessionId && (
-          <Button
-            size="sm"
-            onClick={() => router.push(`/replay/${trace.sessionId}`)}
-            className="bg-violet-600 text-white hover:bg-violet-500"
-          >
-            <ArrowLeft className="mr-1.5 h-4 w-4 rotate-180" />
-            View Session Replay
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <Badge className={trace.captureEnabled === false ? "bg-zinc-800 text-zinc-400" : "bg-emerald-500/15 text-emerald-400"}>
+            {trace.captureEnabled === false ? "Content not retained" : "Captured"}
+          </Badge>
+          {trace.sessionId && (
+            <Button
+              size="sm"
+              onClick={() => router.push(`/replay/${trace.sessionId}`)}
+              className="bg-violet-600 text-white hover:bg-violet-500"
+            >
+              Replay interaction
+            </Button>
+          )}
+        </div>
       </div>
+
+      <InteractionTimeline trace={trace} />
 
       {/* Compression Breakdown Card */}
       {trace.wasCompressed && (
