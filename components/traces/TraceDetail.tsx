@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback } from "react";
-import { type TraceDto, interactionCost } from "@/lib/api";
+import {
+  type TraceDto,
+  interactionCost,
+  costWithoutCompression,
+  tokensAvoided,
+} from "@/lib/api";
 import { formatCost, formatLatency, formatDate, formatTokens } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -134,14 +139,25 @@ function InteractionTimeline({ trace }: { trace: TraceDto }) {
       </ol>
       <div className="mt-6 grid grid-cols-3 gap-4 border-t border-zinc-800 pt-4 text-sm">
         <div>
-          <p className="text-xs text-zinc-500">Tokens</p>
+          <p className="text-xs text-zinc-500">Tokens (sent)</p>
           <p className="text-zinc-200">
             In {formatTokens(trace.inputTokens)} · Out {formatTokens(trace.outputTokens)}
           </p>
+          {trace.wasCompressed && tokensAvoided(trace) > 0 && (
+            <p className="mt-1 text-xs text-zinc-500">
+              Without compression: {formatTokens(trace.originalTokens)} in
+            </p>
+          )}
         </div>
         <div>
-          <p className="text-xs text-zinc-500">Cost</p>
+          <p className="text-xs text-zinc-500">Cost (actual)</p>
           <p className="text-zinc-200">{formatCost(interactionCost(trace))}</p>
+          {trace.wasCompressed &&
+            costWithoutCompression(trace) > interactionCost(trace) && (
+              <p className="mt-1 text-xs text-zinc-500">
+                Without compression: {formatCost(costWithoutCompression(trace))}
+              </p>
+            )}
         </div>
         <div>
           <p className="text-xs text-zinc-500">Latency</p>
@@ -219,8 +235,14 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
             {formatLatency(trace.latencyMs)}
           </span>
           <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
-          <span className="text-sm tabular-nums text-zinc-200 font-medium">
+          <span className="text-sm font-medium tabular-nums text-zinc-200">
             {formatCost(interactionCost(trace))}
+            {trace.wasCompressed &&
+              costWithoutCompression(trace) > interactionCost(trace) && (
+                <span className="ml-2 font-normal text-zinc-500">
+                  (without {formatCost(costWithoutCompression(trace))})
+                </span>
+              )}
           </span>
           <Separator orientation="vertical" className="hidden h-5 bg-zinc-700 sm:block" />
           <span className="text-sm text-zinc-500">
@@ -258,17 +280,26 @@ export default function TraceDetail({ trace }: TraceDetailProps) {
               {Math.round(((trace.originalTokens - trace.inputTokens) / trace.originalTokens) * 100)}% Savings
             </Badge>
           </div>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Original Input</p>
-              <p className="text-xl font-mono font-bold text-zinc-400">{formatTokens(trace.originalTokens)}</p>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-zinc-500">Without compression (input)</p>
+              <p className="font-mono text-xl font-bold text-zinc-400">{formatTokens(trace.originalTokens)}</p>
             </div>
-            <div className="flex flex-col items-center justify-center">
-              <ArrowLeft className="h-5 w-5 text-zinc-700 rotate-180" />
+            <div>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-zinc-500">Sent after compression</p>
+              <p className="font-mono text-xl font-bold text-emerald-400">{formatTokens(trace.inputTokens)}</p>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Compressed Input</p>
-              <p className="text-xl font-mono font-bold text-emerald-400">{formatTokens(trace.inputTokens)}</p>
+            <div>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-zinc-500">Tokens avoided</p>
+              <p className="font-mono text-xl font-bold text-violet-300">{formatTokens(tokensAvoided(trace))}</p>
+            </div>
+            <div>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-zinc-500">Est. cost without / actual</p>
+              <p className="font-mono text-xl font-bold text-zinc-200">
+                {formatCost(costWithoutCompression(trace))}
+                <span className="mx-1 text-zinc-600">/</span>
+                <span className="text-emerald-400">{formatCost(interactionCost(trace))}</span>
+              </p>
             </div>
           </div>
           <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">

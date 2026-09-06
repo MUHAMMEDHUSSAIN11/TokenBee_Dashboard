@@ -17,6 +17,14 @@ import {
 
 export type { DatePreset, DateRangeValue };
 
+const PRESET_LABELS: Record<DatePreset, string> = {
+  today: "Today",
+  "7": "Last 7 days",
+  "30": "Last 30 days",
+  "90": "Last 90 days",
+  custom: "Custom range",
+};
+
 interface HeaderProps {
   title: string;
   subtitle?: string;
@@ -42,8 +50,8 @@ export default function Header({
   const useRange = !!onDateRangeChange && !!dateRange;
 
   return (
-    <header className="flex items-center justify-between border-b border-zinc-200 bg-white/80 px-6 py-4 backdrop-blur-sm transition-colors dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div>
+    <header className="flex flex-col gap-3 border-b border-zinc-200 bg-white/80 px-6 py-4 backdrop-blur-sm transition-colors dark:border-zinc-800 dark:bg-zinc-950/80 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
         <h1 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           {title}
         </h1>
@@ -52,7 +60,7 @@ export default function Header({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-end gap-3">
+      <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         {useRange && (
           <>
             <Select
@@ -78,11 +86,19 @@ export default function Header({
             >
               <SelectTrigger
                 id="days-filter"
-                className="w-[150px] border-zinc-200 bg-white text-zinc-900 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+                className="h-9 w-[160px] shrink-0 border-zinc-200 bg-white text-zinc-900 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
               >
-                <SelectValue />
+                <SelectValue placeholder="Select range">
+                  {PRESET_LABELS[dateRange.preset]}
+                </SelectValue>
               </SelectTrigger>
-              <SelectContent className="border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+              {/* alignItemWithTrigger=false keeps Today/90/Custom all visible in the list */}
+              <SelectContent
+                alignItemWithTrigger={false}
+                align="end"
+                side="bottom"
+                className="min-w-[180px] border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+              >
                 <SelectItem value="today">Today</SelectItem>
                 <SelectItem value="7">Last 7 days</SelectItem>
                 <SelectItem value="30">Last 30 days</SelectItem>
@@ -92,9 +108,10 @@ export default function Header({
             </Select>
 
             {dateRange.preset === "custom" && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <input
                   type="date"
+                  aria-label="From date"
                   value={dateRange.customFrom || toDateInputValue()}
                   max={dateRange.customTo || toDateInputValue()}
                   onChange={(e) =>
@@ -104,11 +121,12 @@ export default function Header({
                       customFrom: e.target.value,
                     })
                   }
-                  className="h-9 rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+                  className="h-9 min-w-[9.5rem] rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
                 />
                 <span className="text-xs text-zinc-500">to</span>
                 <input
                   type="date"
+                  aria-label="To date"
                   value={dateRange.customTo || toDateInputValue()}
                   min={dateRange.customFrom}
                   max={toDateInputValue()}
@@ -119,7 +137,7 @@ export default function Header({
                       customTo: e.target.value,
                     })
                   }
-                  className="h-9 rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+                  className="h-9 min-w-[9.5rem] rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
                 />
               </div>
             )}
@@ -133,11 +151,15 @@ export default function Header({
           >
             <SelectTrigger
               id="days-filter"
-              className="w-[130px] border-zinc-200 bg-white text-zinc-900 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+              className="h-9 w-[160px] shrink-0 border-zinc-200 bg-white text-zinc-900 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+            <SelectContent
+              alignItemWithTrigger={false}
+              align="end"
+              className="min-w-[180px] border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+            >
               <SelectItem value="1">Today</SelectItem>
               <SelectItem value="7">Last 7 days</SelectItem>
               <SelectItem value="30">Last 30 days</SelectItem>
@@ -152,7 +174,7 @@ export default function Header({
             size="icon"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="border-zinc-200 bg-white text-zinc-600 shadow-sm hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="h-9 w-9 shrink-0 border-zinc-200 bg-white text-zinc-600 shadow-sm hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
           >
             <RefreshCw
               className={cn("h-4 w-4", isRefreshing && "animate-spin")}

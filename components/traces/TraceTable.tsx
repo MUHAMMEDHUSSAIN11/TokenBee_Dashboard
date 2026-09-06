@@ -1,7 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type TraceDto, interactionCost } from "@/lib/api";
+import {
+  type TraceDto,
+  interactionCost,
+  costWithoutCompression,
+  tokensAvoided,
+} from "@/lib/api";
 import {
   formatCost,
   formatTokens,
@@ -34,6 +39,13 @@ interface TraceTableProps {
   isLoading: boolean;
 }
 
+function hasCompressionSavings(trace: TraceDto): boolean {
+  return (
+    trace.wasCompressed &&
+    (tokensAvoided(trace) > 0 || (trace.savedCostUsd ?? 0) > 0)
+  );
+}
+
 export default function TraceTable({
   traces,
   offset,
@@ -62,9 +74,7 @@ export default function TraceTable({
             <TableHead className="text-zinc-400">User</TableHead>
             <TableHead className="text-center text-zinc-400">Status</TableHead>
             <TableHead className="text-center text-zinc-400">Capture</TableHead>
-            <TableHead className="text-center text-zinc-400">
-              Savings
-            </TableHead>
+            <TableHead className="text-center text-zinc-400">Savings</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -78,94 +88,160 @@ export default function TraceTable({
                   ))}
                 </TableRow>
               ))
-            : traces.map((trace) => (
-                <TableRow
-                  key={trace.id}
-                  className="cursor-pointer border-zinc-800/50 transition-colors hover:bg-zinc-800/40"
-                  onClick={() => router.push(`/traces/${trace.id}`)}
-                >
-                  <TableCell className="text-zinc-300">
-                    <Tooltip>
-                      <TooltipTrigger className="cursor-default text-left">
-                        {relativeTime(trace.timestamp)}
-                      </TooltipTrigger>
-                      <TooltipContent className="border-zinc-700 bg-zinc-800 text-zinc-200">
-                        {formatDate(trace.timestamp)}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-zinc-200">
-                        {trace.model}
-                      </span>
+            : traces.map((trace) => {
+                const actualCost = interactionCost(trace);
+                const withoutCost = costWithoutCompression(trace);
+                const avoided = tokensAvoided(trace);
+                const compressed = hasCompressionSavings(trace);
+                const savingsPct =
+                  compressed && trace.originalTokens > 0
+                    ? Math.round((avoided / trace.originalTokens) * 100)
+                    : 0;
+
+                return (
+                  <TableRow
+                    key={trace.id}
+                    className="cursor-pointer border-zinc-800/50 transition-colors hover:bg-zinc-800/40"
+                    onClick={() => router.push(`/traces/${trace.id}`)}
+                  >
+                    <TableCell className="text-zinc-300">
+                      <Tooltip>
+                        <TooltipTrigger className="cursor-default text-left">
+                          {relativeTime(trace.timestamp)}
+                        </TooltipTrigger>
+                        <TooltipContent className="border-zinc-700 bg-zinc-800 text-zinc-200">
+                          {formatDate(trace.timestamp)}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-zinc-200">
+                          {trace.model}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className="bg-zinc-800 text-xs text-zinc-400"
+                        >
+                          {trace.provider}
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-zinc-300">
+                      <Tooltip>
+                        <TooltipTrigger className="ml-auto block cursor-default text-right">
+                          <div>
+                            <span className="text-zinc-400">
+                              {formatTokens(trace.inputTokens)}
+                            </span>
+                            <span className="mx-1 text-zinc-600">/</span>
+                            <span>{formatTokens(trace.outputTokens)}</span>
+                          </div>
+                          {compressed && (
+                            <div className="mt-0.5 text-[11px] text-zinc-500">
+                              without: {formatTokens(trace.originalTokens)} in
+                            </div>
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs border-zinc-700 bg-zinc-800 text-zinc-200">
+                          {compressed ? (
+                            <p>
+                              Sent {formatTokens(trace.inputTokens)} input tokens after
+                              compression. Without compression:{" "}
+                              {formatTokens(trace.originalTokens)} input (
+                              {formatTokens(avoided)} avoided).
+                            </p>
+                          ) : (
+                            <p>Input / output tokens sent to the provider.</p>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-zinc-200">
+                      <Tooltip>
+                        <TooltipTrigger className="ml-auto block cursor-default text-right">
+                          <div>{formatCost(actualCost)}</div>
+                          {compressed && withoutCost > actualCost && (
+                            <div className="mt-0.5 text-[11px] text-zinc-500">
+                              without: {formatCost(withoutCost)}
+                            </div>
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs border-zinc-700 bg-zinc-800 text-zinc-200">
+                          {compressed && withoutCost > actualCost ? (
+                            <p>
+                              Actual spend {formatCost(actualCost)}. Estimated without
+                              compression: {formatCost(withoutCost)} (saved{" "}
+                              {formatCost(withoutCost - actualCost)}).
+                            </p>
+                          ) : (
+                            <p>Actual estimated spend for this interaction.</p>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums text-zinc-300">
+                      {formatLatency(trace.latencyMs)}
+                    </TableCell>
+                    <TableCell className="max-w-[120px] truncate font-mono text-xs text-zinc-400">
+                      {trace.sessionId ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-zinc-300">
+                      {trace.userId ?? (
+                        <span className="text-zinc-600">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Tooltip>
+                        <TooltipTrigger className="inline-flex items-center justify-center">
+                          <span
+                            className={`inline-block h-2.5 w-2.5 rounded-full ${
+                              trace.statusCode >= 200 && trace.statusCode < 300
+                                ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.4)]"
+                                : "bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.4)]"
+                            }`}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent className="border-zinc-700 bg-zinc-800 text-zinc-200">
+                          {trace.statusCode}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell className="text-center">
                       <Badge
-                        variant="secondary"
-                        className="bg-zinc-800 text-xs text-zinc-400"
+                        className={
+                          trace.captureEnabled === false
+                            ? "bg-zinc-800 text-zinc-500"
+                            : "bg-emerald-500/15 text-emerald-400"
+                        }
                       >
-                        {trace.provider}
+                        {trace.captureEnabled === false ? "Off" : "On"}
                       </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-zinc-300">
-                    <span className="text-zinc-400">
-                      {formatTokens(trace.inputTokens)}
-                    </span>
-                    <span className="mx-1 text-zinc-600">/</span>
-                    <span>{formatTokens(trace.outputTokens)}</span>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-zinc-200">
-                    {formatCost(interactionCost(trace))}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-zinc-300">
-                    {formatLatency(trace.latencyMs)}
-                  </TableCell>
-                  <TableCell className="max-w-[120px] truncate font-mono text-xs text-zinc-400">
-                    {trace.sessionId ?? "—"}
-                  </TableCell>
-                  <TableCell className="text-zinc-300">
-                    {trace.userId ?? (
-                      <span className="text-zinc-600">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Tooltip>
-                      <TooltipTrigger className="inline-flex items-center justify-center">
-                        <span
-                          className={`inline-block h-2.5 w-2.5 rounded-full ${
-                            trace.statusCode >= 200 && trace.statusCode < 300
-                              ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.4)]"
-                              : "bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.4)]"
-                          }`}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent className="border-zinc-700 bg-zinc-800 text-zinc-200">
-                        {trace.statusCode}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      className={
-                        trace.captureEnabled === false
-                          ? "bg-zinc-800 text-zinc-500"
-                          : "bg-emerald-500/15 text-emerald-400"
-                      }
-                    >
-                      {trace.captureEnabled === false ? "Off" : "On"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {trace.wasCompressed ? (
-                      <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/20 hover:bg-violet-500/30">
-                        {Math.round(((trace.originalTokens - trace.inputTokens) / trace.originalTokens) * 100)}%
-                      </Badge>
-                    ) : (
-                      <span className="text-zinc-600">—</span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {compressed ? (
+                        <Tooltip>
+                          <TooltipTrigger className="inline-flex cursor-default">
+                            <Badge className="border-violet-500/20 bg-violet-500/20 text-violet-400 hover:bg-violet-500/30">
+                              {savingsPct}% · {formatTokens(avoided)}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent className="border-zinc-700 bg-zinc-800 text-zinc-200">
+                            <p>
+                              {formatTokens(avoided)} input tokens avoided
+                              {(trace.savedCostUsd ?? 0) > 0
+                                ? ` · ~${formatCost(trace.savedCostUsd)} estimated savings`
+                                : ""}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <span className="text-zinc-600">—</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           {!isLoading && traces.length === 0 && (
             <TableRow className="border-zinc-800/50">
               <TableCell colSpan={10} className="py-16 text-center">
@@ -186,7 +262,6 @@ export default function TraceTable({
         </TableBody>
       </Table>
 
-      {/* Pagination */}
       <div className="flex items-center justify-between border-t border-zinc-800 px-4 py-3">
         <p className="text-sm text-zinc-500">
           {traces.length > 0
