@@ -17,7 +17,9 @@ import {
 } from "recharts";
 
 interface DailyChartProps {
-  days: number;
+  days?: number;
+  from?: string;
+  to?: string;
   accountId: string;
 }
 
@@ -47,10 +49,10 @@ function CustomTooltip({ active, payload, label }: any) {
   );
 }
 
-export default function DailyChart({ days, accountId }: DailyChartProps) {
+export default function DailyChart({ days, from, to, accountId }: DailyChartProps) {
   const { data, isLoading, isError, refetch } = useQuery<DailyDto[]>({
-    queryKey: ["daily", { days, accountId }],
-    queryFn: () => getDaily({ days, accountId }),
+    queryKey: ["daily", { days, from, to, accountId }],
+    queryFn: () => getDaily({ days, from, to, accountId }),
   });
 
   if (isLoading) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
@@ -10,13 +10,25 @@ import DailyChart from "@/components/dashboard/DailyChart";
 import ModelBreakdown from "@/components/dashboard/ModelBreakdown";
 import UserBreakdown from "@/components/dashboard/UserBreakdown";
 import { createClient } from "@/lib/supabase/client";
+import {
+  DEFAULT_DATE_RANGE,
+  dateRangeLabel,
+  resolveDateRangeParams,
+  type DateRangeValue,
+} from "@/lib/dateRange";
 
 export default function DashboardPage() {
-  const [days, setDays] = useState(30);
+  const [dateRange, setDateRange] = useState<DateRangeValue>(DEFAULT_DATE_RANGE);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [accountId, setAccountId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const supabase = createClient();
+
+  const rangeQuery = useMemo(
+    () => resolveDateRangeParams(dateRange),
+    [dateRange]
+  );
+  const rangeLabel = useMemo(() => dateRangeLabel(dateRange), [dateRange]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -55,8 +67,8 @@ export default function DashboardPage() {
         <Header
           title="Overview"
           subtitle="AI traffic, spend, capture, and optimization"
-          days={days}
-          onDaysChange={setDays}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
           onRefresh={handleRefresh}
           isRefreshing={isRefreshing}
         />
@@ -66,19 +78,37 @@ export default function DashboardPage() {
             <QuotaWarning />
 
             <p className="text-sm text-zinc-500">
-              Metrics below are from your account only. Empty values mean no captured traffic in this window.
+              Metrics below are from your account only ({rangeLabel}). Empty values mean no captured traffic in this window.
             </p>
 
-            {/* Summary Cards — 3x2 grid */}
-            <SummaryCards days={days} accountId={accountId} />
+            <SummaryCards
+              days={rangeQuery.days}
+              from={rangeQuery.from}
+              to={rangeQuery.to}
+              rangeLabel={rangeLabel}
+              accountId={accountId}
+            />
 
-            {/* Daily Activity Chart */}
-            <DailyChart days={days} accountId={accountId} />
+            <DailyChart
+              days={rangeQuery.days}
+              from={rangeQuery.from}
+              to={rangeQuery.to}
+              accountId={accountId}
+            />
 
-            {/* Model + User Breakdown — side by side */}
             <div className="grid grid-cols-2 gap-6">
-              <ModelBreakdown days={days} accountId={accountId} />
-              <UserBreakdown days={days} accountId={accountId} />
+              <ModelBreakdown
+                days={rangeQuery.days}
+                from={rangeQuery.from}
+                to={rangeQuery.to}
+                accountId={accountId}
+              />
+              <UserBreakdown
+                days={rangeQuery.days}
+                from={rangeQuery.from}
+                to={rangeQuery.to}
+                accountId={accountId}
+              />
             </div>
           </div>
         </main>

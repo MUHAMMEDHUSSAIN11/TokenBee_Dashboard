@@ -15,14 +15,25 @@ import {
 } from "lucide-react";
 
 interface SummaryCardsProps {
-  days: number;
+  days?: number;
+  from?: string;
+  to?: string;
+  rangeLabel?: string;
   accountId: string;
 }
 
-export default function SummaryCards({ days, accountId }: SummaryCardsProps) {
+export default function SummaryCards({
+  days,
+  from,
+  to,
+  rangeLabel,
+  accountId,
+}: SummaryCardsProps) {
+  const windowLabel = rangeLabel ?? (days ? `last ${days} days` : "selected range");
+
   const { data, isLoading, isError, refetch } = useQuery<SummaryDto>({
-    queryKey: ["summary", { days, accountId }],
-    queryFn: () => getSummary({ days, accountId }),
+    queryKey: ["summary", { days, from, to, accountId }],
+    queryFn: () => getSummary({ days, from, to, accountId }),
   });
 
   if (isLoading) {
@@ -61,14 +72,14 @@ export default function SummaryCards({ days, accountId }: SummaryCardsProps) {
     {
       title: "AI interactions",
       value: data.totalRequests.toLocaleString(),
-      subtext: `last ${days} days`,
+      subtext: windowLabel,
       icon: Activity,
       color: "default" as const,
     },
     {
       title: "AI spend",
       value: formatCost(data.totalCostUsd),
-      subtext: `last ${days} days`,
+      subtext: windowLabel,
       icon: DollarSign,
       color: "default" as const,
     },

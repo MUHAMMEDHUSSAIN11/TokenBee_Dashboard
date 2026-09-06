@@ -1,6 +1,10 @@
 "use client";
 
 import { cn, toDateInputValue } from "@/lib/utils";
+import {
+  type DatePreset,
+  type DateRangeValue,
+} from "@/lib/dateRange";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,19 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export type DatePreset = "today" | "7" | "30" | "90" | "custom";
-
-export interface DateRangeValue {
-  preset: DatePreset;
-  /** Used when preset is 7 / 30 / 90 */
-  days?: number;
-  /** ISO bounds when preset is today or custom */
-  from?: string;
-  to?: string;
-  /** yyyy-mm-dd for custom inputs */
-  customFrom?: string;
-  customTo?: string;
-}
+export type { DatePreset, DateRangeValue };
 
 interface HeaderProps {
   title: string;

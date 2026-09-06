@@ -21,14 +21,21 @@ import {
 import { AlertTriangle } from "lucide-react";
 
 interface UserBreakdownProps {
-  days: number;
+  days?: number;
+  from?: string;
+  to?: string;
   accountId: string;
 }
 
-export default function UserBreakdown({ days, accountId }: UserBreakdownProps) {
+export default function UserBreakdown({
+  days,
+  from,
+  to,
+  accountId,
+}: UserBreakdownProps) {
   const { data, isLoading, isError, refetch } = useQuery<UserDto[]>({
-    queryKey: ["by-user", { days, accountId }],
-    queryFn: () => getByUser({ days, accountId }),
+    queryKey: ["by-user", { days, from, to, accountId }],
+    queryFn: () => getByUser({ days, from, to, accountId }),
   });
 
   if (isLoading) {

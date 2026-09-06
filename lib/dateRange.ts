@@ -1,7 +1,4 @@
-"use client";
-
 import {
-  type DateRangeValue,
   startOfLocalDayIso,
   endOfLocalDayIso,
   localDateInputToStartIso,
@@ -9,14 +6,30 @@ import {
   toDateInputValue,
 } from "@/lib/utils";
 
-// re-export helpers used with DateRangeValue from Header
-export type { DateRangeValue } from "@/components/layout/Header";
+export type DatePreset = "today" | "7" | "30" | "90" | "custom";
 
-export function resolveDateRangeParams(range: DateRangeValue): {
+export interface DateRangeValue {
+  preset: DatePreset;
+  /** Used when preset is 7 / 30 / 90 */
+  days?: number;
+  /** yyyy-mm-dd for custom inputs */
+  customFrom?: string;
+  customTo?: string;
+}
+
+/** Query params for dashboard metric APIs. */
+export interface DateRangeQuery {
   days?: number;
   from?: string;
   to?: string;
-} {
+}
+
+export const DEFAULT_DATE_RANGE: DateRangeValue = {
+  preset: "30",
+  days: 30,
+};
+
+export function resolveDateRangeParams(range: DateRangeValue): DateRangeQuery {
   if (range.preset === "today") {
     return {
       from: startOfLocalDayIso(),

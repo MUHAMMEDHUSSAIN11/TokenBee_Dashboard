@@ -17,14 +17,21 @@ import {
 import { AlertTriangle } from "lucide-react";
 
 interface ModelBreakdownProps {
-  days: number;
+  days?: number;
+  from?: string;
+  to?: string;
   accountId: string;
 }
 
-export default function ModelBreakdown({ days, accountId }: ModelBreakdownProps) {
+export default function ModelBreakdown({
+  days,
+  from,
+  to,
+  accountId,
+}: ModelBreakdownProps) {
   const { data, isLoading, isError, refetch } = useQuery<ModelDto[]>({
-    queryKey: ["by-model", { days, accountId }],
-    queryFn: () => getByModel({ days, accountId }),
+    queryKey: ["by-model", { days, from, to, accountId }],
+    queryFn: () => getByModel({ days, from, to, accountId }),
   });
 
   if (isLoading) {

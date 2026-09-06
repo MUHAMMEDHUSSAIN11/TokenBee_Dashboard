@@ -1,18 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import { getSavings, type SavingsDto } from "@/lib/api";
 import { formatCost, formatTokens } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import {
+  DEFAULT_DATE_RANGE,
+  dateRangeLabel,
+  resolveDateRangeParams,
+  type DateRangeValue,
+} from "@/lib/dateRange";
 import Link from "next/link";
 
 export default function OptimizationPage() {
-  const [days, setDays] = useState(30);
+  const [dateRange, setDateRange] = useState<DateRangeValue>(DEFAULT_DATE_RANGE);
   const [accountId, setAccountId] = useState<string | null>(null);
   const supabase = createClient();
+
+  const rangeQuery = useMemo(
+    () => resolveDateRangeParams(dateRange),
+    [dateRange]
+  );
+  const rangeLabel = useMemo(() => dateRangeLabel(dateRange), [dateRange]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -21,8 +33,14 @@ export default function OptimizationPage() {
   }, [supabase]);
 
   const { data, isLoading } = useQuery<SavingsDto>({
-    queryKey: ["savings", { days, accountId }],
-    queryFn: () => getSavings({ days, accountId: accountId || undefined }),
+    queryKey: ["savings", { ...rangeQuery, accountId }],
+    queryFn: () =>
+      getSavings({
+        days: rangeQuery.days,
+        from: rangeQuery.from,
+        to: rangeQuery.to,
+        accountId: accountId || undefined,
+      }),
     enabled: !!accountId,
   });
 
@@ -30,22 +48,15 @@ export default function OptimizationPage() {
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden pl-60">
-        <Header title="Optimization" subtitle="Token usage, cost, and compression impact" />
+        <Header
+          title="Optimization"
+          subtitle="Token usage, cost, and compression impact"
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
         <main className="flex-1 overflow-y-auto bg-zinc-50 p-6 dark:bg-zinc-950">
           <div className="mx-auto max-w-5xl space-y-6">
-            <div className="flex gap-2">
-              {[7, 30, 90].map((d) => (
-                <button
-                  key={d}
-                  onClick={() => setDays(d)}
-                  className={`rounded-md px-3 py-1.5 text-sm ${
-                    days === d ? "bg-violet-600 text-white" : "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                  }`}
-                >
-                  {d} days
-                </button>
-              ))}
-            </div>
+            <p className="text-sm text-zinc-500">Showing data for {rangeLabel}.</p>
 
             {isLoading && <div className="h-40 animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800" />}
 
