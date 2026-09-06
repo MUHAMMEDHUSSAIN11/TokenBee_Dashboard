@@ -46,7 +46,9 @@ export function resolveDateRangeParams(range: DateRangeValue): DateRangeQuery {
     };
   }
 
-  return { days: range.days ?? Number(range.preset) || 30 };
+  const presetDays = Number(range.preset);
+  const days = range.days ?? (Number.isFinite(presetDays) && presetDays > 0 ? presetDays : 30);
+  return { days };
 }
 
 export function dateRangeLabel(range: DateRangeValue): string {
